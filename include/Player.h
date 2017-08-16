@@ -1,38 +1,23 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <pair>
+#include <utility>
+#include <memory>
 
 #include "Board.h"
+#include "InputComponent.h"
+
+using std::unique_ptr;
 
 class Player {
 	public:
-		Player(Board * board);
+		Player(const Board & board, unique_ptr<InputComponent> && input_component);
 		virtual ~Player();
-		virtual std::pair<int, int> make_move() = 0;
+		virtual std::pair<int, int> make_move();
 
 	protected:
-		Board * _board;
-}
-
-class HumanPlayer : public Player {
-	public:
-		HumanPlayer(Board * board);
-		virtual ~HumanPlayer();
-		std::pair<int, int> make_move();
-
-	private:
-		UserInterface * _user_interface;
-}
-
-class ComputerPlayer : public Player {
-	public:
-		ComputerPlayer(Board * board, unique_ptr<AI_Predictor> ai_predictor);
-		virtual ~ComputerPlayer();
-		std::pair<int, int> make_move();
-
-	private:
-		unique_ptr<AI_Predictor> _ai_predictor;
-}
+		const Board _board;
+		unique_ptr<InputComponent> _input_component;
+};
 
 #endif //PLAYER_H

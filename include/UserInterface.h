@@ -5,9 +5,9 @@
 
 class UserInterface {
 	public:
-		UserInterface(unsigned int size_x, unsigned int size_y);
+		UserInterface();
 		virtual ~UserInterface();
-		void draw(Board board);
-}
+		void draw(const Board & board);
+};
 
 #endif //USER_INTERFACE_H
