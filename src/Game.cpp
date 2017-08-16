@@ -7,4 +7,6 @@ Game::Game(Board board, unique_ptr<Player> first_player, unique_ptr<Player> seco
 	_user_interface(std::move(user_interface))
 {}
 
-void start_game() {}
+Game::~Game() {}
+
+void Game::start_game() {}

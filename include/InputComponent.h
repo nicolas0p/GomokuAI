@@ -7,8 +7,7 @@
 
 class InputComponent {
 	public:
-		InputComponent();
-		virtual ~InputComponent();
+		virtual ~InputComponent() {}
 		virtual std::pair<int, int> get_move(const Board& board) = 0;
 };
 
