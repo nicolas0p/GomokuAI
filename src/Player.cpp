@@ -10,4 +10,7 @@ Player::Player(const Board & board, unique_ptr<InputComponent> && input_componen
 
 Player::~Player() {}
 
-std::pair<int, int> Player::make_move() {}
+std::pair<int, int> Player::make_move()
+{
+	return _input_component->get_move(_board);
+}
