@@ -7,7 +7,7 @@ class UserInterface {
 	public:
 		UserInterface();
 		virtual ~UserInterface();
-		void draw(const Board & board) = 0;
+		void draw(const Board & board);
 };
 
 #endif //USER_INTERFACE_H

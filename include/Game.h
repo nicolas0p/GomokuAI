@@ -5,12 +5,13 @@
 
 #include "Player.h"
 #include "Board.h"
+#include "UserInterface.h"
 
 using std::unique_ptr;
 
 class Game {
 	public:
-		Game(Board board, unique_ptr<Player> && first_player, unique_ptr<Player> && second_player);
+		Game(Board board, unique_ptr<Player> first_player, unique_ptr<Player> second_player, unique_ptr<UserInterface> user_interface);
 		virtual ~Game();
 		void start_game();
 
@@ -18,6 +19,7 @@ class Game {
 		Board _board;
 		unique_ptr<Player> _first_player;
 		unique_ptr<Player> _second_player;
+		unique_ptr<UserInterface> _user_interface;
 
 };
 #endif /* GAME_H */
