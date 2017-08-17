@@ -82,3 +82,6 @@ Session.vim
 # auto-generated tag files
 
 # End of https://www.gitignore.io/api/vim,c++,tags,linux
+
+#executable
+gomoku

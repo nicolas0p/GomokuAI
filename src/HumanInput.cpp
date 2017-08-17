@@ -3,6 +3,6 @@
 
 HumanInput::HumanInput() {}
 HumanInput::~HumanInput() {}
-std::pair<int, int> HumanInput::get_move(const Board& board)
+std::pair<int, int> HumanInput::get_move(Board board)
 {
 }
