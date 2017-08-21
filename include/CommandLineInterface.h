@@ -6,8 +6,8 @@
 
 class CommandLineInterface : public UserInterface {
 	public:
-		UserInterface();
-		virtual ~UserInterface();
+		CommandLineInterface();
+		~CommandLineInterface();
 		void draw(const Board & board);
 };
 

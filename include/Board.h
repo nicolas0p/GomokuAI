@@ -1,4 +1,4 @@
-#ifndef BOARD_H
+#ifndef BOARD_H	
 #define BOARD_H
 
 #include <vector>
@@ -7,16 +7,17 @@ class Board {
 	public:
 		Board(unsigned int size_x, unsigned int size_y);
 		~Board();
-		void insert_move(std::pair<int, int> position);
+		void insert_move(std::pair<int, int> position, int player); // players = Moves
 		void remove_move(std::pair<int, int> position);
+		int get_value_position(std::pair<int, int> position)  const ; // returns a Moves;
 
 	private:
 		enum Moves {
 			NONE = 0,
-			HUMAN = 1,
-			COMPUTER = 2
+			FIRSTPLAYER = 1,
+			SECONDPLAYER = 2
 		};
-		std::vector<Moves> _board;
+		std::vector<Moves> _board; // 15 elements = first line
 
 };
 
