@@ -5,7 +5,7 @@
 #define SIZE 15
 
 Board::Board(unsigned int size_x, unsigned int size_y) :
-	_board(size_x * size_y)
+	_board{new vector<Moves>(size_x * size_y, NONE)}
 {}
 
 Board::~Board() {}

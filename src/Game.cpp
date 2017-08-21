@@ -42,7 +42,7 @@ void Game::start_game() {
 		}
 
 		///// Second player turn /////
-		_board.insert_move(_second_player->make_move(), Board::FIRSTPLAYER);	
+		_board.insert_move(_second_player->make_move(), Board::SECONDPLAYER);	
 		// Update second player's points 
 		_second_player->add_points(points_calculator(_board));
 

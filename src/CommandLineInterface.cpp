@@ -26,8 +26,10 @@ void CommandLineInterface::draw(const Board & board)
 				std::cout << "     |" ;
 			else if (board.get_value_position(std::make_pair(l,c)) == Board::FIRSTPLAYER)
 				std::cout << "  X  |" ;
-			else //board->get_value_position(std::make_pair(l,c) == 2
+			else if (board.get_value_position(std::make_pair(l,c)) == Board::SECONDPLAYER)
 				std::cout << "  O  |" ;
+			else
+				std::cout << "ERRO |" ;
 		}
 
 		std::cout << std::endl;
