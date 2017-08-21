@@ -66,8 +66,7 @@ void Game::start_game() {
 }
 
 void Game::help(){
-	// descrever regras do jogo...
-	// ganha quem formar sequencia de 5 peças, que vale 35000. Ou seja, quem conseguir 35000 ou mais primeiro, ganha.
+	std::cout << "Quem fizer uma sequencia de 5 peças ganha!" << std::endl;
 }
 
 int Game::points_calculator(Board &_board)
