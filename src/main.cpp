@@ -35,7 +35,7 @@ int main()
 
 	while(funcao==1 || funcao==2 )
 	{
-		std::cout << "====================================================" << std::endl
+		std::cout << "======================== MENU ============================" << std::endl
 			 //<< " 1 - Help " << std::endl
 			 << " 2 - Iniciar jogo " << std::endl
 			 << " Pressione qualquer outra tecla para sair " << std::endl
