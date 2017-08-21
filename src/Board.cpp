@@ -22,7 +22,7 @@ void Board::remove_move(std::pair<int, int> position){
 	_board[((position.first-1) * SIZE) + position.second] = NONE;  // position.first = line; position.second = col
 }
 
-Moves Board::get_value_position(std::pair<int, int> position) const { 
+Board::Moves Board::get_value_position(std::pair<int, int> position) const { 
 	return _board[((position.first-1) * SIZE) + position.second]; // position.first = line; position.second = col
 
 }

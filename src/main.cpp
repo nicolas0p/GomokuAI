@@ -11,9 +11,6 @@
 #include "heuristic.h"
 #include "MoveGenerator.h"
 
-#define FIRSTPLAYER 1
-#define SECONDPLAYER 2
-
 using std::unique_ptr;
 
 int main()
@@ -78,9 +75,4 @@ int main()
 			}
 		}
 	}
-
-	
-
-	
-	
 }
