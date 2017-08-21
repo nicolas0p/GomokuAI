@@ -17,6 +17,7 @@ int main()
 {
 
 	unsigned int funcao = 1;
+	int difficulty = 2;
 	unsigned int temp = 0;
 	Board board(15, 15);
 	std::function<int (const Board &)> heuristic = sum_sequence_values;
@@ -52,23 +53,27 @@ int main()
 				std::cout << "Definir Dificuldade: " << std::endl;
 				std::cin >> difficulty;
 
+				std::unique_ptr<Player> first_player , second_player;
+
 				// set players
 				std::cout << "============= DEFINIR JOGADORES: =================" << std::endl
 						  << " 1 - Humano " << std::endl 
 						  << " 2 - Computador " << std::endl
 						  << " Definir primeiro jogador: " << std::endl;
 				std::cin >> temp;
+
 				if (temp == 1)
-					auto first_player = std::make_unique<Player>(board, std::make_unique<HumanInput>());
+					first_player = std::make_unique<Player>(board, std::make_unique<HumanInput>());
 				else
-					auto first_player = std::make_unique<Player>(board, std::make_unique<Minimax>(heuristic, move_generator, difficulty, Board::FIRSTPLAYER));
+					first_player = std::make_unique<Player>(board, std::make_unique<Minimax>(heuristic, move_generator, difficulty, Board::FIRSTPLAYER));
 	
 				std::cout << std::endl << " Definir segundo jogador: " << std::endl;
 				std::cin >> temp;
 				if (temp == 1)
-					auto second_player = std::make_unique<Player>(board, std::make_unique<HumanInput>());
+					second_player = std::make_unique<Player>(board, std::make_unique<HumanInput>());
 				else
-					auto second_player = std::make_unique<Player>(board, std::make_unique<Minimax>(heuristic, move_generator, difficulty, Board::SECONDPLAYER));
+					second_player = std::make_unique<Player>(board, std::make_unique<Minimax>(heuristic, move_generator, difficulty, Board::SECONDPLAYER));
+
 				// FIRST player starts				
 				Game game(board, std::move(first_player), std::move(second_player), std::make_unique<CommandLineInterface>()); 
 				game.start_game();
