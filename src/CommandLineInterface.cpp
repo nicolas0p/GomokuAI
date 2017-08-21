@@ -12,11 +12,16 @@ CommandLineInterface::~CommandLineInterface() {}
 
 void CommandLineInterface::draw(const Board & board)
 {
-	std::cout << "  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  10  |  11  |  12  |  13  |  14  |  15  |" << std::endl;
+	std::cout << "    |  0   |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  10 |  11 |  12 |  13 |  14 |" << std::endl;
 
-	for (int l = 1; l<SIZE; l++){ //line
-		std::cout << l << "  | ";
-		for(int c = 1; c<SIZE; c++ ){ //column
+	for (int l = 0; l<SIZE; l++){ //line
+
+		if (l<10)
+			std::cout << "0" << l << "  | ";
+		else 
+			std::cout << l << "  | ";
+
+		for(int c = 0; c<SIZE; c++ ){ //column
 			if (board.get_value_position(std::make_pair(l,c)) == Board::NONE)
 				std::cout << "     |" ;
 			else if (board.get_value_position(std::make_pair(l,c)) == Board::FIRSTPLAYER)
@@ -24,6 +29,7 @@ void CommandLineInterface::draw(const Board & board)
 			else //board->get_value_position(std::make_pair(l,c) == 2
 				std::cout << "  O  |" ;
 		}
+
 		std::cout << std::endl;
 	}
 }
