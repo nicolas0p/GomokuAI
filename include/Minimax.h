@@ -11,7 +11,7 @@ using std::unique_ptr;
 
 class Minimax : public InputComponent {
 	public:
-		Minimax(const std::function<int (const Board &)>& heuristic, const std::function<std::set<std::pair<int, int>> (const Board&)>& move_generator, unsigned int difficulty, int player);
+		Minimax(const std::function<int (const Board &)>& heuristic, const std::function<std::set<std::pair<int, int>> (const Board&)>& move_generator, unsigned int difficulty, Board::Moves player);
 		~Minimax();
 		std::pair<int, int> get_move(Board board);
 
@@ -26,6 +26,7 @@ class Minimax : public InputComponent {
 		std::function<int (const Board &)> _heuristic;
 		std::function<std::set<std::pair<int, int>> (const Board& board)> _generate_moves;
 		unsigned int _difficulty;
-		int _player;
+		Board::Moves _player;
+
 };
 #endif /* MINIMAX_H */

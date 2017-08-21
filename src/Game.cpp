@@ -3,8 +3,6 @@
 #include <iostream>
 
 #define WINNER 35000
-#define FIRSTPLAYER 1
-#define SECONDPLAYER 2
 #define MAX 256 // quantidade-1 jogadas possíveis de realizar num GUMOKU
 
 Game::Game(Board board, unique_ptr<Player> first_player, unique_ptr<Player> second_player, unique_ptr<UserInterface> && user_interface) :
@@ -28,7 +26,7 @@ void Game::start_game() {
 	while(_n_move < MAX){
 	
 		///// First player turn /////
-		_board.insert_move(_first_player->make_move(),FIRSTPLAYER);	
+		_board.insert_move(_first_player->make_move(), Board::FIRSTPLAYER);	
 		// Update first player's points 
 		_first_player->add_points(points_calculator(_board));
 
@@ -44,7 +42,7 @@ void Game::start_game() {
 		}
 
 		///// Second player turn /////
-		_board.insert_move(_second_player->make_move(),FIRSTPLAYER);	
+		_board.insert_move(_second_player->make_move(), Board::FIRSTPLAYER);	
 		// Update second player's points 
 		_second_player->add_points(points_calculator(_board));
 
