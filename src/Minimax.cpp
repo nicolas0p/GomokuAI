@@ -12,7 +12,7 @@ Minimax::Minimax(const std::function<int (const Board &)>& heuristic, const std:
 
 Minimax::~Minimax() {}
 
-std::pair<int, int> Minimax::get_move(Board board)
+std::pair<int, int> Minimax::get_move(Board board, Board::Moves player)
 {
 	return std::get<0>(mmax(&board, _difficulty));
 }

@@ -11,16 +11,18 @@ using std::unique_ptr;
 
 class Player {
 	public:
-		Player(const Board & board, unique_ptr<InputComponent> && input_component);
+		Player(const Board & board, unique_ptr<InputComponent> && input_component, Board::Moves player);
 		virtual ~Player();
 		virtual std::pair<int, int> make_move();
 		void add_points(int p);
 		int get_points();
+		Board::Moves get_player();
 		
 	protected:
 		int _point;
 		const Board _board;
 		unique_ptr<InputComponent> _input_component;
+		Board::Moves _player;
 };
 
 #endif //PLAYER_H
