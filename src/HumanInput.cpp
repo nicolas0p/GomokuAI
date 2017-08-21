@@ -10,7 +10,7 @@ HumanInput::HumanInput() :
 HumanInput::~HumanInput() {}
 
 
-std::pair<int, int> HumanInput::get_move(const Board & board)
+std::pair<int, int> HumanInput::get_move(const Board board)
 {
 	std::cout << "Your turn:" << std::endl << "Enter a line:";
 	std::cin >> _line;
