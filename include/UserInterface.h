@@ -5,6 +5,7 @@
 
 class UserInterface {
 	public:
+		UserInterface();
 		virtual ~UserInterface();
 		virtual void draw(const Board & board) = 0;
 };

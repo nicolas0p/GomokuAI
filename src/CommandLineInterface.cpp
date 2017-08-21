@@ -15,9 +15,9 @@ void CommandLineInterface::draw(const Board & board)
 	for (int l = 1; l<SIZE; l++){ //line
 		std::cout << l << "  | ";
 		for(int c = 1; c<SIZE; c++ ){ //column
-			if (board.get_value_position(std::make_pair(l,c)) == 0)
+			if (board.get_value_position(std::make_pair(l,c)) == NONE)
 				std::cout << "     |" ;
-			else if (board.get_value_position(std::make_pair(l,c)) == 1)
+			else if (board.get_value_position(std::make_pair(l,c)) == FIRSTPLAYER)
 				std::cout << "  X  |" ;
 			else //board->get_value_position(std::make_pair(l,c) == 2
 				std::cout << "  O  |" ;
