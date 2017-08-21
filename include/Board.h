@@ -19,8 +19,7 @@ class Board {
 
 
 	private:
-		//std::vector<Moves> _board; // 15 elements = first line
-		std::vector<Moves> _board;
+		std::vector<Moves> _board; // 15 elements = first line
 
 
 };
