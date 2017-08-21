@@ -63,16 +63,16 @@ int main()
 				std::cin >> temp;
 
 				if (temp == 1)
-					first_player = std::make_unique<Player>(board, std::make_unique<HumanInput>());
+					first_player = std::make_unique<Player>(board, std::make_unique<HumanInput>(), Board::FIRSTPLAYER);
 				else
-					first_player = std::make_unique<Player>(board, std::make_unique<Minimax>(heuristic, move_generator, difficulty, Board::FIRSTPLAYER));
+					first_player = std::make_unique<Player>(board, std::make_unique<Minimax>(heuristic, move_generator, difficulty, Board::FIRSTPLAYER),  Board::FIRSTPLAYER);
 	
 				std::cout << std::endl << " Definir segundo jogador: " << std::endl;
 				std::cin >> temp;
 				if (temp == 1)
-					second_player = std::make_unique<Player>(board, std::make_unique<HumanInput>());
+					second_player = std::make_unique<Player>(board, std::make_unique<HumanInput>(), Board::SECONDPLAYER);
 				else
-					second_player = std::make_unique<Player>(board, std::make_unique<Minimax>(heuristic, move_generator, difficulty, Board::SECONDPLAYER));
+					second_player = std::make_unique<Player>(board, std::make_unique<Minimax>(heuristic, move_generator, difficulty, Board::SECONDPLAYER), Board::SECONDPLAYER);
 
 				// FIRST player starts				
 				Game game(board, std::move(first_player), std::move(second_player), std::make_unique<CommandLineInterface>()); 
