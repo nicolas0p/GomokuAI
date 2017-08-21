@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <boost/functional/hash.hpp>
-
 
 struct pairhash {
 public:
@@ -40,6 +40,7 @@ class Board {
 			std::pair<int, int> opening;
 		};
 		std::vector<Moves> _board; // 15 elements = first line
+		std::unordered_set<std::pair<int, int>, pairhash> _available_positions; //positions on the board that have not being played yet
 		std::unordered_map<std::pair<int, int>, std::vector<Sequence>, pairhash> _sequences_first_player;
 		std::unordered_map<std::pair<int, int>, std::vector<Sequence>, pairhash> _sequences_second_player;
 
