@@ -14,7 +14,7 @@ void CommandLineInterface::draw(const Board & board)
 {
 	std::cout << "    |  0   |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  10 |  11 |  12 |  13 |  14 |" << std::endl;
 
-	for (int l = 0; l<SIZE; l++){ //line
+	for (int l = 1; l<SIZE; l++){ //line
 
 		if (l<10)
 			std::cout << "0" << l << "  | ";
@@ -29,7 +29,7 @@ void CommandLineInterface::draw(const Board & board)
 			else if (board.get_value_position(std::make_pair(l,c)) == Board::SECONDPLAYER)
 				std::cout << "  O  |" ;
 			else
-				std::cout << "ERRO |" ;
+				std::cout << "ERRO |"  ;
 		}
 
 		std::cout << std::endl;

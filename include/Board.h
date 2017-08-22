@@ -16,10 +16,11 @@ class Board {
 		void insert_move(std::pair<int, int> position, Board::Moves player); // players = Moves
 		void remove_move(std::pair<int, int> position);
 		Moves get_value_position(std::pair<int, int> position)  const ; // returns a Moves;
-
+		void teste();
+		std::vector<Moves> _board; // 15 elements = first line
 
 	private:
-		std::vector<Moves> _board; // 15 elements = first line
+		//std::vector<Moves> _board; // 15 elements = first line
 
 
 };

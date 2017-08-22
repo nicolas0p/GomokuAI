@@ -24,12 +24,10 @@ void Game::start_game() {
 
 	// loop until someone wins
 	while(_n_move < MAX){
-	
 		///// First player turn /////
 		_board.insert_move(_first_player->make_move(), Board::FIRSTPLAYER);	
 		// Update first player's points 
 		_first_player->add_points(points_calculator(_board));
-
 		// print turn and board
 		_n_move++; 
 		std::cout << "---------------" << _n_move << "º Move -----------------" << std::endl;

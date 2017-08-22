@@ -12,16 +12,23 @@ Board::~Board() {}
 void Board::insert_move(std::pair<int, int> position, Moves player){
 	//_board[((position.first-1) * SIZE) + position.second] = player; // position.first = line; position.second = col
 	if (get_value_position(position) == NONE)
-		_board.at(((position.first-1) * SIZE) + position.second) = player; 
+		_board.at(((position.first) * SIZE) + position.second) = player; 
 	else
 		std::cout << "ERRO!!! Tentativa de inserir jogada sem definir jogador" << std::endl;
 }
 
 void Board::remove_move(std::pair<int, int> position){
-	_board[((position.first-1) * SIZE) + position.second] = NONE;  // position.first = line; position.second = col
+	_board[((position.first) * SIZE) + position.second] = NONE;  // position.first = line; position.second = col
 }
 
 Board::Moves Board::get_value_position(std::pair<int, int> position) const { 
-	return _board[((position.first-1) * SIZE) + position.second]; // position.first = line; position.second = col
+	return _board[((position.first) * SIZE) + position.second]; // position.first = line; position.second = col
 
+}
+
+void Board::teste(){
+	for ( int it = 0 ; it < _board.size(); it++){
+		std::cout << _board[it] << ' ' ;
+	}
+	std::cout << std::endl;
 }
