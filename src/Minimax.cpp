@@ -20,7 +20,7 @@ std::pair<int, int> Minimax::get_move(Board board, Board::Moves player)
 std::tuple<std::pair<int, int>, int> Minimax::mmax(Board * board, unsigned int depth)
 {
 	//set of moves
-	std::set<std::pair<int, int>> moves = _generate_moves(*board);
+	auto moves = _generate_moves(*board);
 	std::tuple<std::pair<int, int>, int> choice;
 	//bottom of tree
 	if (depth <= 1) {

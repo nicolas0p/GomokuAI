@@ -3,8 +3,7 @@
 
 #include "CommandLineInterface.h"
 #include "Board.h"
-
-const int SIZE = 15;
+#include "traits.h"
 
 CommandLineInterface::CommandLineInterface() {}
 

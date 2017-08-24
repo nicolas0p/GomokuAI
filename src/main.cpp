@@ -10,8 +10,10 @@
 #include "CommandLineInterface.h"
 #include "heuristic.h"
 #include "MoveGenerator.h"
+#include "traits.h"
 
 using std::unique_ptr;
+
 
 int main()
 {
@@ -19,7 +21,7 @@ int main()
 	unsigned int funcao = 1;
 	int difficulty = 2;
 	unsigned int temp = 0;
-	Board board(15, 15);
+	Board board(SIZE, SIZE);
 
 	std::function<int (const Board &)> heuristic = sum_sequence_values;
 	std::function<std::set<std::pair<int, int>> (const Board&)> move_generator = simple_move_generator;

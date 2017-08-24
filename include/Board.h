@@ -4,18 +4,16 @@
 
 #include <vector>
 #include <unordered_map>
-#include <unordered_set>
-#include <boost/functional/hash.hpp>
+#include <set>
+
+#include "traits.h"
 
 struct pairhash {
 public:
   template <typename T, typename U>
   std::size_t operator()(const std::pair<T, U> &x) const
   {
-	  std::size_t result;
-	  boost::hash_combine(result, x.first);
-	  boost::hash_combine(result, x.second);
-	  return result;
+	 return x.first * SIZE + x.second;
   }
 };
 
@@ -32,20 +30,22 @@ class Board {
 		void insert_move(std::pair<int, int> position, Board::Moves player); // players = Moves
 		void remove_move(std::pair<int, int> position);
 		Moves get_value_position(std::pair<int, int> position)  const ; // returns a Moves;
+		std::set<std::pair<int, int>> available_positions() const;
 
 	private:
 		//Contains a sequence length and other opening
-		//if there's no other opening = (-1,-1)
+		//other_is_open contains if the other opening is open
 		struct Sequence {
 			unsigned short length;
 			std::pair<int, int> opening;
+			bool other_is_open;
 		};
 		//these two functions take care of keeping the sequences data structures in order after insertir or removing a move
 		void insert_sequences(std::unordered_map<std::pair<int, int>, std::vector<Sequence>, pairhash>, std::pair<int, int>);
 		void remove_sequences(std::unordered_map<std::pair<int, int>, std::vector<Sequence>, pairhash>, std::pair<int, int>);
 
 		std::vector<Moves> _board; // 15 elements = first line
-		std::unordered_set<std::pair<int, int>, pairhash> _available_positions; //positions on the board that have not being played yet
+		std::set<std::pair<int, int>> _available_positions; //positions on the board that have not being played yet
 		std::unordered_map<std::pair<int, int>, std::vector<Sequence>, pairhash> _sequences_first_player;
 		std::unordered_map<std::pair<int, int>, std::vector<Sequence>, pairhash> _sequences_second_player;
 
