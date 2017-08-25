@@ -80,6 +80,7 @@ void Board::insert_sequences(std::unordered_map<std::pair<int, int>, std::set<Se
 			auto seq = it[0];
 			seq.length++;
 			seq.opening = next_opening(seq, move);
+			seq.other_is_open = get_value_position(seq.opening) == NONE;
 			dir = next_direction(dir);
 		} else if(it.size() == 2){
 			//two sequences with the same opening in the same direction, merge them!
@@ -112,16 +113,22 @@ void Board::insert_sequences(std::unordered_map<std::pair<int, int>, std::set<Se
 				case VERTICAL:
 					edge1 = {move.first, move.second - 1}; //to the left
 					edge2 = {move.first, move.second + 1}; //to the right
-					sequences[edge1].insert(Sequence(1, edge2, get_value_position(edge2) == NONE, VERTICAL));
-					sequences[edge2].insert(Sequence(1, edge1, get_value_position(edge1) == NONE, VERTICAL));
 					break;
 				case HORIZONTAL:
+					edge1 = {move.first - 1, move.second}; //above
+					edge2 = {move.first + 1, move.second}; //below
 					break;
 				case LEFT:
+					edge1 = {move.first - 1, move.second - 1}; //above and left
+					edge2 = {move.first + 1, move.second + 1}; //below and right
 					break;
 				case RIGHT:
+					edge1 = {move.first - 1, move.second + 1}; //above and right
+					edge2 = {move.first + 1, move.second - 1}; //below and left
 					break;
 			}
+			sequences[edge1].insert(Sequence(1, edge2, get_value_position(edge2) == NONE, dir));
+			sequences[edge2].insert(Sequence(1, edge1, get_value_position(edge1) == NONE, dir));
 			dir = next_direction(dir);
 		}
 	}
