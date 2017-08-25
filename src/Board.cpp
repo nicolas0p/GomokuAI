@@ -133,6 +133,7 @@ void Board::insert_sequences(std::unordered_map<std::pair<int, int>, std::set<Se
 		}
 	}
 }
+
 std::vector<Direction> _possible_directions = {VERTICAL, HORIZONTAL, LEFT, RIGHT};
 Direction next_direction(const Direction& direction)
 {
