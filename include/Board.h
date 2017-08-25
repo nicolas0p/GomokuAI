@@ -19,13 +19,6 @@ public:
   }
 };
 
-struct pairhash {
-	std::size_t operator()(const std::pair<int, int> &x) const
-	{
-		return x.first*15 + x.second;
-	}
-};
-
 enum Direction {
 	VERTICAL = 0, HORIZONTAL = 1, LEFT = 2/* \ */, RIGHT = 3/* / */
 };
