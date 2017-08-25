@@ -22,6 +22,7 @@ public:
 enum Direction {
 	VERTICAL = 0, HORIZONTAL = 1, LEFT = 2/* \ */, RIGHT = 3/* / */
 };
+Direction next_direction(const Direction& direction);
 
 class Board {
 	public:
@@ -42,6 +43,7 @@ class Board {
 		//Contains a sequence length and other opening
 		//other_is_open contains if the other opening is open
 		struct Sequence {
+			Sequence(){}
 			Sequence(const unsigned short& len, const std::pair<int, int>& open, const bool& ot_is_open, const Direction& dir):
 				length{len},
 				opening{open},

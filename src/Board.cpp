@@ -72,7 +72,7 @@ void Board::insert_sequences(std::unordered_map<std::pair<int, int>, std::set<Se
 				right.push_back(seq);
 		}
 	}
-	Direction dir = 0;
+	Direction dir = VERTICAL;
 	for(auto it : {vertical, horizontal, left, right}) {
 		if(it.size() == 1) {
 			//only one sequence in this direction with this opening, just increase it
@@ -80,7 +80,7 @@ void Board::insert_sequences(std::unordered_map<std::pair<int, int>, std::set<Se
 			auto seq = it[0];
 			seq.length++;
 			seq.opening = next_opening(seq, move);
-			dir++;
+			dir = next_direction(dir);
 		} else if(it.size() == 2){
 			//two sequences with the same opening in the same direction, merge them!
 			//remove both of them and their other opening copies
@@ -105,25 +105,31 @@ void Board::insert_sequences(std::unordered_map<std::pair<int, int>, std::set<Se
 			seq2.direction = it[1].direction;
 			sequences[it[1].opening].insert(seq1);
 			sequences[it[0].opening].insert(seq2);
-			dir++;
+			dir = next_direction(dir);
 		} else { //no sequence, create new sequence in this direction
+			std::pair<int, int> edge1, edge2;
 			switch(dir) {
 				case VERTICAL:
-					std::pair<int, int> edge1, edge2;
 					edge1 = {move.first, move.second - 1}; //to the left
 					edge2 = {move.first, move.second + 1}; //to the right
-					sequences[edge1].insert(Sequence(1, edge2, _board[edge2] == NONE, VERTICAL));
-					sequences[edge2].insert(Sequence(1, edge1, _board[edge1] == NONE, VERTICAL));
+					sequences[edge1].insert(Sequence(1, edge2, get_value_position(edge2) == NONE, VERTICAL));
+					sequences[edge2].insert(Sequence(1, edge1, get_value_position(edge1) == NONE, VERTICAL));
 					break;
 				case HORIZONTAL:
 					break;
 				case LEFT:
 					break;
 				case RIGHT:
+					break;
 			}
-			dir++;
+			dir = next_direction(dir);
 		}
 	}
+}
+std::vector<Direction> _possible_directions = {VERTICAL, HORIZONTAL, LEFT, RIGHT};
+Direction next_direction(const Direction& direction)
+{
+	return _possible_directions[direction];
 }
 
 /* Handles the sequences structures. This method should be called with the sequences of the player that is NOT making the move now. It will remove the openings of the sequences where the move lands.
