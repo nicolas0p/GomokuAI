@@ -183,6 +183,21 @@ Direction next_direction(const Direction& direction)
  **/
 void Board::insert_move_other_people_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
 {
+	auto to_decrease = sequences[move]; //contains the sequences that will be decreased
+	for(auto other : to_decrease)
+	{
+		// set other_is_open, from sequences that have open = move, as false
+		auto seq = sequences[other.opening];
+		for(auto f : seq)
+		{
+			if (f.opening == move){
+				f.other_is_open = false;
+				// f.opening = (-1,-1) ? Is needed invalidad f.opening???????????
+			}
+		}
+	}
+	// remove the sequence
+	sequences.erase(move);
 }
 
 std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move)
