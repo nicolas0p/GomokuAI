@@ -62,7 +62,6 @@ std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
 	else if (p.first == 0 && p.second == 0)
 	else if (p.first == 0 && p.second > 0 && p.second < 14)
 	else if (p.first == 14)
-
 }
 
 Board::Moves Board::get_value_position(std::pair<int, int> position) const
@@ -211,11 +210,11 @@ void Board::insert_move_other_people_sequences(Board::Sequences_map& sequences, 
 	for(auto other : to_decrease)
 	{
 		// set other_is_open, from sequences that have open = move, as false
-		auto seq = sequences[other.opening];
+		auto seq = sequences[other.first];
 		for(auto f : seq)
 		{
-			if (f.opening == move){
-				f.other_is_open = false;
+			if (f.first == move){
+				f.second.other_is_open = false;
 				// f.opening = (-1,-1) ? Is needed invalidad f.opening???????????
 			}
 		}
