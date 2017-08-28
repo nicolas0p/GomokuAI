@@ -3,7 +3,7 @@
 
 #include "Minimax.h"
 
-Minimax::Minimax(const std::function<int (const Board &)>& heuristic, const std::function<std::set<std::pair<int, int>> (const Board&)>& move_generator, unsigned int difficulty, Board::Moves player) :
+Minimax::Minimax(const std::function<int (const Board &, const Board::Moves &)>& heuristic, const std::function<std::set<std::pair<int, int>> (const Board&)>& move_generator, unsigned int difficulty, Board::Moves player) :
 	_heuristic(heuristic),
 	_generate_moves(move_generator),
 	_difficulty(difficulty),
@@ -26,12 +26,12 @@ std::tuple<std::pair<int, int>, int> Minimax::mmax(Board * board, unsigned int d
 	if (depth <= 1) {
 		std::get<0>(choice) = *moves.begin();
 		board->insert_move(std::get<0>(choice),_player);
-		std::get<1>(choice) = _heuristic(*board);
+		std::get<1>(choice) = _heuristic(*board, _player);
 		board->remove_move(std::get<0>(choice));
 		moves.erase(moves.begin());
 		for(auto it : moves) {
 			board->insert_move(it,_player);
-			int current = _heuristic(*board);
+			int current = _heuristic(*board, _player);
 			if(current > std::get<1>(choice)) {
 				std::get<0>(choice) = it;
 				std::get<1>(choice) = current;
@@ -66,12 +66,12 @@ std::tuple<std::pair<int, int>, int> Minimax::mmin(Board * board, unsigned int d
 	if (depth <= 1) {
 		std::get<0>(choice) = *moves.begin();
 		board->insert_move(std::get<0>(choice), _player);
-		std::get<1>(choice) = _heuristic(*board);
+		std::get<1>(choice) = _heuristic(*board, _player);
 		board->remove_move(std::get<0>(choice));
 		moves.erase(moves.begin());
 		for(auto it : moves) {
 			board->insert_move(it, _player);
-			int current = _heuristic(*board);
+			int current = _heuristic(*board, _player);
 			if(current < std::get<1>(choice)) {
 				std::get<0>(choice) = it;
 				std::get<1>(choice) = current;

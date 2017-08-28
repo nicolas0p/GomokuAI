@@ -3,6 +3,6 @@
 
 #include "Board.h"
 
-int sum_sequence_values(const Board &);
+int sum_sequence_values(const Board &, const Board::Moves &);
 
 #endif /* HEURISTIC_H */
