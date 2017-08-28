@@ -35,10 +35,16 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 
 void Board::remove_move(std::pair<int, int> position)
 {
-	auto player = _board[((position.first-1) * SIZE) + position.second];
 	_board[((position.first) * SIZE) + position.second] = NONE;  // position.first = line; position.second = col
 	_available_positions.insert(position);
 	//TODO figure out how to fix the sequences data structures
+	
+	// where the position is in the sequence?
+	// if in the limits/points/extremity: 
+	// create the new map on the nex position opened; 
+	
+	// in the middle: create two new sequences and delete the old one. 
+			 
 }
 
 Board::Moves Board::get_value_position(std::pair<int, int> position) const
@@ -162,6 +168,21 @@ Direction next_direction(const Direction& direction)
  **/
 void Board::remove_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
 {
+	auto to_decrease = sequences[move]; //contains the sequences that will be decreased
+	for(auto other : to_decrease)
+	{
+		// set other_is_open, from sequences that have open = move, as false
+		auto seq = sequences[other.first];
+		for(auto f : seq)
+		{
+			if (f.first == move){
+				f.second.other_is_open = false;
+				// f.opening = (-1,-1) ? Is needed invalidad f.opening???????????
+			}
+		}
+	}
+	// remove the sequence
+	sequences.erase(move);
 }
 
 std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move)
