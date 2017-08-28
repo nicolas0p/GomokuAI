@@ -177,7 +177,6 @@ void Board::remove_sequences(Board::Sequences_map& sequences, const std::pair<in
 		{
 			if (f.first == move){
 				f.second.other_is_open = false;
-				// f.opening = (-1,-1) ? Is needed invalidad f.opening???????????
 			}
 		}
 	}
