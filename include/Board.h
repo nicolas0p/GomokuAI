@@ -79,8 +79,10 @@ class Board {
 
 		std::vector<Moves> _board; // 15 elements = first line
 		std::set<std::pair<int, int>> _available_positions; //positions on the board that have not being played yet
-		std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash> _sequences_first_player;
-		std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash> _sequences_second_player;
+		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> _sequences_first_player;
+		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> _sequences_second_player;
+
+		std::set<std::pair<int, int>> get_neighbors(std::pair<int, int> p);
 };
 
 #endif /* BOARD_H */
