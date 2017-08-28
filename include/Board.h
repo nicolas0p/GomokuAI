@@ -72,7 +72,7 @@ class Board {
 		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> second_player_sequences() const;
 
 	private:
-
+		bool is_valid_position(const std::pair<int, int> position);
 		//Helper function to help find the next opening for a sequence after a move has been played
 		std::pair<int, int> next_opening(const Sequence& sequence, const std::pair<int, int>& move);
 		//these two functions take care of keeping the sequences data structures in order after insertir or removing a move

@@ -25,7 +25,8 @@ int sum_sequence_values(const Board & board, const Board::Moves & player)
 			if(it.other_is_open) {
 				multiplier = 2;
 			}
-			score += multiplier * points_per_length[it.length];
+			//score += multiplier * points_per_length[it.length];
+			score += points_per_length[it.length - 1];
 		}
 	}
 	for(auto seqs : other_sequence) {
@@ -34,7 +35,8 @@ int sum_sequence_values(const Board & board, const Board::Moves & player)
 			if(it.other_is_open) {
 				multiplier = 2;
 			}
-			score -= multiplier * points_per_length[it.length];
+			//score -= multiplier * points_per_length[it.length];
+			score -= points_per_length[it.length - 1];
 		}
 	}
 	return score;

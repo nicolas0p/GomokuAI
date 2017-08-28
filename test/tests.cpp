@@ -2,7 +2,7 @@
 
 #include "Minimax.h"
 #include "Board.h"
-#include "heuristic.h"
+#include "Heuristic.h"
 
 TEST(InsertMoveInBoard, OneMove) {
 	int size = 15;
@@ -10,6 +10,7 @@ TEST(InsertMoveInBoard, OneMove) {
 	board.insert_move({0,0}, Board::FIRSTPLAYER);
 	EXPECT_EQ(size*size - 1, board.available_positions().size());
 	EXPECT_EQ(Board::FIRSTPLAYER, board.get_value_position({0,0}));
+	EXPECT_EQ(3, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
 //TEST(InsertMoveInBoard, OneMoveHeuristic) {

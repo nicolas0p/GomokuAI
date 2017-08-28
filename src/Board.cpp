@@ -79,8 +79,15 @@ void Board::insert_sequences(std::unordered_map<std::pair<int, int>, std::set<Se
 			//and update opening
 			auto seq = it[0];
 			seq.length++;
+			//TODO remove this sequence in sequences[seq.opening] before updating
+			//sequences[seq.opening].erase();
 			seq.opening = next_opening(seq, move);
-			seq.other_is_open = get_value_position(seq.opening) == NONE;
+			if(seq.opening.first < 0 || seq.opening.second < 0 || seq.opening.first >= SIZE || seq.opening.second >= SIZE) {
+				seq.other_is_open = false;
+			} else {
+				seq.other_is_open = get_value_position(seq.opening) == NONE;
+			}
+			//TODO remove sequence if both side are closed if(!seq.other_is_open && sequences[])
 			dir = next_direction(dir);
 		} else if(it.size() == 2){
 			//two sequences with the same opening in the same direction, merge them!
@@ -111,12 +118,12 @@ void Board::insert_sequences(std::unordered_map<std::pair<int, int>, std::set<Se
 			std::pair<int, int> edge1, edge2;
 			switch(dir) {
 				case VERTICAL:
-					edge1 = {move.first, move.second - 1}; //to the left
-					edge2 = {move.first, move.second + 1}; //to the right
-					break;
-				case HORIZONTAL:
 					edge1 = {move.first - 1, move.second}; //above
 					edge2 = {move.first + 1, move.second}; //below
+					break;
+				case HORIZONTAL:
+					edge1 = {move.first, move.second - 1}; //to the left
+					edge2 = {move.first, move.second + 1}; //to the right
 					break;
 				case LEFT:
 					edge1 = {move.first - 1, move.second - 1}; //above and left
@@ -127,14 +134,25 @@ void Board::insert_sequences(std::unordered_map<std::pair<int, int>, std::set<Se
 					edge2 = {move.first + 1, move.second - 1}; //below and left
 					break;
 			}
-			sequences[edge1].insert(Sequence(1, edge2, get_value_position(edge2) == NONE, dir));
-			sequences[edge2].insert(Sequence(1, edge1, get_value_position(edge1) == NONE, dir));
+			bool is_open = is_valid_position(edge2) && get_value_position(edge2) == NONE;
+			if(is_valid_position(edge1)) {
+				sequences[edge1].insert(Sequence(1, edge2, is_open, dir));
+			}
+			is_open = is_valid_position(edge1) && get_value_position(edge1) == NONE;
+			if(is_valid_position(edge2)) {
+				sequences[edge2].insert(Sequence(1, edge1, is_open, dir));
+			}
 			dir = next_direction(dir);
 		}
 	}
 }
 
-std::vector<Direction> _possible_directions = {VERTICAL, HORIZONTAL, LEFT, RIGHT};
+bool Board::is_valid_position(const std::pair<int, int> position)
+{
+	return !(position.first < 0 || position.second < 0 || position.first >= SIZE || position.second >= SIZE );
+}
+
+std::vector<Direction> _possible_directions = {HORIZONTAL, LEFT, RIGHT, VERTICAL};
 Direction next_direction(const Direction& direction)
 {
 	return _possible_directions[direction];
