@@ -13,5 +13,10 @@ TEST(InsertMoveInBoard, OneMove) {
 	EXPECT_EQ(3, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
-//TEST(InsertMoveInBoard, OneMoveHeuristic) {
-//}
+TEST(InsertMoveInBoard, TwoMoves) {
+	int size = 15;
+	Board board(size, size);
+	board.insert_move({0,0}, Board::FIRSTPLAYER);
+	board.insert_move({0,1}, Board::FIRSTPLAYER);
+	EXPECT_EQ(305, sum_sequence_values(board, Board::FIRSTPLAYER));
+}
