@@ -17,7 +17,7 @@ Board::~Board() {}
 
 void Board::insert_move(std::pair<int, int> position, Moves player)
 {
-	//_board[((position.first-1) * SIZE) + position.second] = player; // position.first = line; position.second = col
+	//_board[((position.first) * SIZE) + position.second] = player; // position.first = line; position.second = col
 	if (get_value_position(position) != NONE) {
 		std::cout << "ERRO!!! Tentativa de inserir jogada em posição já ocupada" << std::endl;
 		return;
@@ -35,10 +35,30 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 
 void Board::remove_move(std::pair<int, int> position)
 {
-	auto player = _board[((position.first-1) * SIZE) + position.second];
 	_board[((position.first) * SIZE) + position.second] = NONE;  // position.first = line; position.second = col
 	_available_positions.insert(position);
 	//TODO figure out how to fix the sequences data structures
+	
+	// where the position is in the sequence?
+	// if in the limits/points/extremity: 
+	// create the new map on the nex position opened; 
+	
+	// in the middle: create two new sequences and delete the old one. 
+			 
+}
+
+std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
+{
+	std::set<std::pair<int, int>> neighbors;
+	neighbors.assert(std::make_pair(p.first,p.second-1));
+	neighbors.assert(std::make_pair(p.first-1,p.second-1));
+	neighbors.assert(std::make_pair(p.first-1,p.second));
+	neighbors.assert(std::make_pair(p.first-1,p.second+1));
+	neighbors.assert(std::make_pair(p.first,p.second+1));
+	neighbors.assert(std::make_pair(p.first+1,p.second+1));
+	neighbors.assert(std::make_pair(p.first+1,p.second));
+	neighbors.assert(std::make_pair(p.first+1,p.second-1));
+	return neighbors;
 }
 
 Board::Moves Board::get_value_position(std::pair<int, int> position) const
