@@ -56,20 +56,20 @@ std::set<std::pair<int, int>> Board::available_positions() const
 void Board::insert_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
 {
 	auto to_increase = sequences[move]; //contains the sequences that will be increased
-	std::vector<Sequence> vertical, horizontal, left, right;
+	std::vector<std::pair<std::pair<int, int>, Sequence>> vertical, horizontal, left, right;
 	for(auto seq : to_increase) {
 		switch(seq.second.direction) {
 			case VERTICAL:
-				vertical.push_back(seq.second);
+				vertical.push_back({seq.first, seq.second});
 				break;
 			case HORIZONTAL:
-				horizontal.push_back(seq.second);
+				horizontal.push_back({seq.first, seq.second});
 				break;
 			case LEFT:
-				left.push_back(seq.second);
+				left.push_back({seq.first, seq.second});
 				break;
 			case RIGHT:
-				right.push_back(seq.second);
+				right.push_back({seq.first, seq.second});
 		}
 	}
 	Direction dir = VERTICAL;
@@ -77,42 +77,40 @@ void Board::insert_sequences(Board::Sequences_map& sequences, const std::pair<in
 		if(it.size() == 1) {
 			//only one sequence in this direction with this opening, just increase it
 			//and update opening
-			auto seq = it[0];
+			auto seq = it[0].second;
 			seq.length++;
 			//TODO remove this sequence in sequences[seq.opening] before updating
 			//sequences[seq.opening].erase();
-			seq.opening = next_opening(seq, move);
-			if(seq.opening.first < 0 || seq.opening.second < 0 || seq.opening.first >= SIZE || seq.opening.second >= SIZE) {
+			auto opening = next_opening(seq, it[0].first, move);
+			if(opening.first < 0 || opening.second < 0 || opening.first >= SIZE || opening.second >= SIZE) {
 				seq.other_is_open = false;
 			} else {
-				seq.other_is_open = get_value_position(seq.opening) == NONE;
+				seq.other_is_open = get_value_position(opening) == NONE;
 			}
 			//TODO remove sequence if both side are closed if(!seq.other_is_open && sequences[])
 			dir = next_direction(dir);
-		} else if(it.size() == 2){
+		} else if(it.size() == 2) {
 			//two sequences with the same opening in the same direction, merge them!
 			//remove both of them and their other opening copies
-			//sequences[move].erase(it[0]);
-			//sequences[it[0].opening].erase(it[0]);
-			//sequences[move].erase(it[1]);
-			//sequences[it[1].opening].erase(it[1]);
-			if(!it[0].other_is_open && !it[1].other_is_open) { //if both ends are closed
+			sequences[move].erase(it[0].first);
+			sequences[move].erase(it[1].first);
+			sequences[it[0].first].erase(move);
+			sequences[it[1].first].erase(move);
+			if(!it[0].second.other_is_open && !it[1].second.other_is_open) { //if both ends are closed
 				//TODO check to see if it is length 5!
 				continue;
 			}
 			auto seq1 = Sequence();
 			auto seq2 = Sequence();
-			unsigned short length = it[0].length + it[1].length + 1;
+			unsigned short length = it[0].second.length + it[1].second.length + 1;
 			seq1.length = length;
 			seq2.length = length;
-			seq1.opening = it[0].opening; //has to be added in sequences[it[1].opening]
-			seq2.opening = it[1].opening;
-			seq1.other_is_open = it[0].other_is_open;
-			seq2.other_is_open = it[1].other_is_open;
-			seq1.direction = it[0].direction;
-			seq2.direction = it[1].direction;
-			//sequences[it[1].opening].insert(seq1);
-			//sequences[it[0].opening].insert(seq2);
+			seq1.other_is_open = it[0].second.other_is_open;
+			seq2.other_is_open = it[1].second.other_is_open;
+			seq1.direction = it[0].second.direction;
+			seq2.direction = it[1].second.direction;
+			sequences[it[1].first][it[0].first] = seq1;
+			sequences[it[0].first][it[1].first] = seq2;
 			dir = next_direction(dir);
 		} else { //no sequence, create new sequence in this direction
 			std::pair<int, int> edge1, edge2;
@@ -137,10 +135,12 @@ void Board::insert_sequences(Board::Sequences_map& sequences, const std::pair<in
 			bool is_open = is_valid_position(edge2) && get_value_position(edge2) == NONE;
 			if(is_valid_position(edge1)) {
 				//sequences[edge1].insert(Sequence(1, edge2, is_open, dir));
+				sequences[edge1][edge2] = Sequence(1, is_open, dir);
 			}
 			is_open = is_valid_position(edge1) && get_value_position(edge1) == NONE;
 			if(is_valid_position(edge2)) {
 				//sequences[edge2].insert(Sequence(1, edge1, is_open, dir));
+				sequences[edge2][edge1] = Sequence(1, is_open, dir);
 			}
 			dir = next_direction(dir);
 		}
@@ -164,29 +164,29 @@ void Board::remove_sequences(Board::Sequences_map& sequences, const std::pair<in
 {
 }
 
-std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pair<int, int>& move)
+std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move)
 {
 	switch(sequence.direction) {
 		case VERTICAL:
-			if(move.first > sequence.opening.first) {
+			if(move.first > opening.first) {
 				return {move.first + 1, move.second}; //below
 			}
 			return {move.first - 1, move.second}; //above
 			break;
 		case HORIZONTAL:
-			if(move.second > sequence.opening.second) {
+			if(move.second > opening.second) {
 				return {move.first, move.second + 1}; //to the right
 			}
 			return {move.first, move.second - 1}; //to the left
 			break;
 		case LEFT:
-			if(move.first > sequence.opening.first) {
+			if(move.first > opening.first) {
 				return {move.first + 1, move.second + 1}; //to the right and below
 			}
 			return {move.first - 1, move.second - 1}; //to the left and above
 			break;
 		case RIGHT:
-			if(move.first > sequence.opening.first) {
+			if(move.first > opening.first) {
 				return {move.first + 1, move.second - 1}; //to the left and below
 			}
 			return {move.first - 1, move.second + 1}; //to the right and above

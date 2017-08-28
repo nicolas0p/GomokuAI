@@ -41,23 +41,18 @@ class Board {
 		//other_is_open contains if the other opening is open
 		struct Sequence {
 			Sequence(){}
-			Sequence(const unsigned short& len, const std::pair<int, int>& open, const bool& ot_is_open, const Direction& dir):
+			Sequence(const unsigned short& len, const bool& ot_is_open, const Direction& dir):
 				length{len},
-				opening{open},
 				other_is_open{ot_is_open},
 				direction{dir}
 				{}
 
 			unsigned short length;
-			std::pair<int, int> opening;
 			bool other_is_open;
 			Direction direction;
 
 			bool operator<(const Sequence& seq) const
 			{
-				if(opening != seq.opening) {
-					return opening < seq.opening;
-				}
 				if(length != seq.length) {
 					return length < seq.length;
 				}
@@ -76,7 +71,7 @@ class Board {
 	private:
 		bool is_valid_position(const std::pair<int, int> position);
 		//Helper function to help find the next opening for a sequence after a move has been played
-		std::pair<int, int> next_opening(const Sequence& sequence, const std::pair<int, int>& move);
+		std::pair<int, int> next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move);
 		//these two functions take care of keeping the sequences data structures in order after insertir or removing a move
 		void insert_sequences(std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash>& sequences, const std::pair<int, int>& move);
 		void remove_sequences(std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash>& sequences, const std::pair<int, int>& move);
