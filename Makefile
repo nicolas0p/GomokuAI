@@ -3,14 +3,14 @@ CFLAGS=-Wall -std=c++14
 DEBUGFLAGS=-g -Og
 TEST_FLAGS=--gtest_break_on_failure
 
-TEST_LIB=-lgtest
+TEST_LIB=-lgtest -pthread
 
 EXEC=gomoku
 TEST_EXEC=gomoku_test
 
 SOURCE_DIR=src
 HEADERS_DIR=include
-TEST_DIR=tests
+TEST_DIR=test
 
 MAIN_FILE :=$(SOURCE_DIR)/main.cpp
 SOURCE_FILES :=$(filter-out $(MAIN_FILE),$(wildcard $(SOURCE_DIR)/*.cpp))
