@@ -49,16 +49,20 @@ void Board::remove_move(std::pair<int, int> position)
 
 std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
 {
-	std::set<std::pair<int, int>> neighbors;
-	neighbors.assert(std::make_pair(p.first,p.second-1));
-	neighbors.assert(std::make_pair(p.first-1,p.second-1));
-	neighbors.assert(std::make_pair(p.first-1,p.second));
-	neighbors.assert(std::make_pair(p.first-1,p.second+1));
-	neighbors.assert(std::make_pair(p.first,p.second+1));
-	neighbors.assert(std::make_pair(p.first+1,p.second+1));
-	neighbors.assert(std::make_pair(p.first+1,p.second));
-	neighbors.assert(std::make_pair(p.first+1,p.second-1));
-	return neighbors;
+	if (p.first > 0 && p.first < 14 && p.second > 0 && p.second < 14)
+		return {std::make_pair(p.first,p.second-1), 
+				std::make_pair(p.first-1,p.second-1),
+				std::make_pair(p.first-1,p.second),
+				std::make_pair(p.first-1,p.second+1),
+				std::make_pair(p.first,p.second+1),
+				std::make_pair(p.first+1,p.second+1),
+				std::make_pair(p.first+1,p.second),
+				std::make_pair(p.first+1,p.second-1)};
+	else if (p.first == 0 && p.second > 0 && p.second < 14)
+	else if (p.first == 0 && p.second == 0)
+	else if (p.first == 0 && p.second > 0 && p.second < 14)
+	else if (p.first == 14)
+
 }
 
 Board::Moves Board::get_value_position(std::pair<int, int> position) const
