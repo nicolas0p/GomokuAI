@@ -68,8 +68,8 @@ class Board {
 			}
 		};
 
-		const std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> first_player_sequences() const;
-		const std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> second_player_sequences() const;
+		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> first_player_sequences() const;
+		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> second_player_sequences() const;
 
 	private:
 
