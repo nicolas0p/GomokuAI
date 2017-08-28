@@ -8,7 +8,7 @@
 #include "HumanInput.h"
 #include "Minimax.h"
 #include "CommandLineInterface.h"
-#include "heuristic.h"
+#include "Heuristic.h"
 #include "MoveGenerator.h"
 #include "traits.h"
 
@@ -23,7 +23,7 @@ int main()
 	unsigned int temp = 0;
 	Board board(SIZE, SIZE);
 
-	std::function<int (const Board &)> heuristic = sum_sequence_values;
+	std::function<int (const Board &, const Board::Moves &)> heuristic = sum_sequence_values;
 	std::function<std::set<std::pair<int, int>> (const Board&)> move_generator = simple_move_generator;
 
 	// Menu

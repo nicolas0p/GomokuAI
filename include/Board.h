@@ -5,8 +5,6 @@
 #include <unordered_map>
 #include <set>
 #include <vector>
-#include <unordered_map>
-#include <set>
 
 #include "traits.h"
 
@@ -39,7 +37,6 @@ class Board {
 		Moves get_value_position(std::pair<int, int> position)  const ; // returns a Moves;
 		std::set<std::pair<int, int>> available_positions() const;
 
-	private:
 		//Contains a sequence length and other opening
 		//other_is_open contains if the other opening is open
 		struct Sequence {
@@ -70,6 +67,11 @@ class Board {
 				return !other_is_open;
 			}
 		};
+
+		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> first_player_sequences() const;
+		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> second_player_sequences() const;
+
+	private:
 
 		//Helper function to help find the next opening for a sequence after a move has been played
 		std::pair<int, int> next_opening(const Sequence& sequence, const std::pair<int, int>& move);

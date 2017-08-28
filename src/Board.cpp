@@ -190,3 +190,12 @@ std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pai
 	}
 }
 
+std::unordered_map<std::pair<int, int>, std::set<Board::Sequence>, pairhash> Board::first_player_sequences() const
+{
+	return _sequences_first_player;
+}
+
+std::unordered_map<std::pair<int, int>, std::set<Board::Sequence>, pairhash> Board::second_player_sequences() const
+{
+	return _sequences_second_player;
+}
