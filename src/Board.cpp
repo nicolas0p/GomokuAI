@@ -215,7 +215,6 @@ void Board::insert_move_other_people_sequences(Board::Sequences_map& sequences, 
 		{
 			if (f.first == move){
 				f.second.other_is_open = false;
-				// f.opening = (-1,-1) ? Is needed invalidad f.opening???????????
 			}
 		}
 	}
