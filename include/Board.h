@@ -68,21 +68,23 @@ class Board {
 			}
 		};
 
-		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> first_player_sequences() const;
-		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> second_player_sequences() const;
+		typedef std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Board::Sequence, pairhash>, pairhash> Sequences_map;
+
+		Sequences_map first_player_sequences() const;
+		Sequences_map second_player_sequences() const;
 
 	private:
 		bool is_valid_position(const std::pair<int, int> position);
 		//Helper function to help find the next opening for a sequence after a move has been played
 		std::pair<int, int> next_opening(const Sequence& sequence, const std::pair<int, int>& move);
 		//these two functions take care of keeping the sequences data structures in order after insertir or removing a move
-		void insert_sequences(std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash>& sequences, const std::pair<int, int>& move);
-		void remove_sequences(std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash>& sequences, const std::pair<int, int>& move);
+		void insert_sequences(std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash>& sequences, const std::pair<int, int>& move);
+		void remove_sequences(std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash>& sequences, const std::pair<int, int>& move);
 
 		std::vector<Moves> _board; // 15 elements = first line
 		std::set<std::pair<int, int>> _available_positions; //positions on the board that have not being played yet
-		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> _sequences_first_player;
-		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> _sequences_second_player;
+		std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash> _sequences_first_player;
+		std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash> _sequences_second_player;
 };
 
 #endif /* BOARD_H */
