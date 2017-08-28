@@ -13,7 +13,7 @@ TEST(InsertMoveInBoard, OneMove) {
 	EXPECT_EQ(3, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
-TEST(InsertMoveInBoard, TwoMoves) {
+TEST(InsertMoveInBoard, TwoHorizontalNextMoves) {
 	int size = 15;
 	Board board(size, size);
 	board.insert_move({0,0}, Board::FIRSTPLAYER);

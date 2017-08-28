@@ -79,13 +79,18 @@ void Board::insert_sequences(Board::Sequences_map& sequences, const std::pair<in
 			//and update opening
 			auto seq = it[0].second;
 			seq.length++;
-			//TODO remove this sequence in sequences[seq.opening] before updating
-			//sequences[seq.opening].erase();
+			sequences[move].erase(it[0].first);
 			auto opening = next_opening(seq, it[0].first, move);
-			if(opening.first < 0 || opening.second < 0 || opening.first >= SIZE || opening.second >= SIZE) {
-				seq.other_is_open = false;
-			} else {
-				seq.other_is_open = get_value_position(opening) == NONE;
+			bool this_is_open = is_valid_position(opening) && get_value_position(opening) == NONE;
+			if(this_is_open) { //only insert it if it is open
+				sequences[opening][it[0].first] = seq;
+			}
+			if(seq.other_is_open) { //update the other side
+				seq = sequences[it[0].first][move];
+				seq.length++;
+				seq.other_is_open = this_is_open;
+				sequences[it[0].first][opening] = seq;
+				sequences[it[0].first].erase(move);
 			}
 			//TODO remove sequence if both side are closed if(!seq.other_is_open && sequences[])
 			dir = next_direction(dir);
