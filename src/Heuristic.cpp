@@ -18,24 +18,13 @@ int sum_sequence_values(const Board & board, const Board::Moves & player)
 		other_sequence = board.first_player_sequences();
 	}
 	int score = 0;
-	int multiplier;
 	for(auto seqs : my_sequence) {
 		for(auto it : seqs.second) {
-			multiplier = 1;
-			if(it.second.other_is_open) {
-				multiplier = 2;
-			}
-			//score += multiplier * points_per_length[it.length];
 			score += points_per_length[it.second.length - 1];
 		}
 	}
 	for(auto seqs : other_sequence) {
 		for(auto it : seqs.second) {
-			multiplier = 1;
-			if(it.second.other_is_open) {
-				multiplier = 2;
-			}
-			//score -= multiplier * points_per_length[it.length];
 			score -= points_per_length[it.second.length - 1];
 		}
 	}
