@@ -25,11 +25,11 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 	_board.at(((position.first) * SIZE) + position.second) = player;
 	_available_positions.erase(position);
 	if(player == Board::FIRSTPLAYER) {
-		insert_sequences(_sequences_first_player, position);
-		remove_sequences(_sequences_second_player, position);
+		update_self_sequences(_sequences_first_player, position);
+		update_other_player_sequences(_sequences_second_player, position);
 	} else {
-		insert_sequences(_sequences_second_player, position);
-		remove_sequences(_sequences_first_player, position);
+		update_self_sequences(_sequences_second_player, position);
+		update_other_player_sequences(_sequences_first_player, position);
 	}
 }
 
@@ -53,7 +53,7 @@ std::set<std::pair<int, int>> Board::available_positions() const
 
 /* Handles the sequences structures. This method should be called with the sequences of the player that is making the move now. It will increase the sequences where the move lands.
  **/
-void Board::insert_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
+void Board::update_self_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
 {
 	auto to_increase = sequences[move]; //contains the sequences that will be increased
 	std::vector<std::pair<std::pair<int, int>, Sequence>> vertical, horizontal, left, right;
@@ -181,7 +181,7 @@ Direction next_direction(const Direction& direction)
 
 /* Handles the sequences structures. This method should be called with the sequences of the player that is NOT making the move now. It will remove the openings of the sequences where the move lands.
  **/
-void Board::remove_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
+void Board::update_other_player_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
 {
 }
 
