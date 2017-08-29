@@ -32,11 +32,6 @@ class Board {
 
 		Board(unsigned int size_x, unsigned int size_y);
 		~Board();
-		void insert_move(std::pair<int, int> position, Board::Moves player); // players = Moves
-		void remove_move(std::pair<int, int> position);
-		Moves get_value_position(std::pair<int, int> position)  const ; // returns a Moves;
-		std::set<std::pair<int, int>> available_positions() const;
-
 		//Contains a sequence length and other opening
 		//other_is_open contains if the other opening is open
 		struct Sequence {
@@ -68,6 +63,11 @@ class Board {
 		Sequences_map first_player_sequences() const;
 		Sequences_map second_player_sequences() const;
 
+		void insert_move(std::pair<int, int> position, Board::Moves player); // players = Moves
+		void remove_move(std::pair<int, int> position);
+		Moves get_value_position(std::pair<int, int> position)  const ; // returns a Moves;
+		std::set<std::pair<int, int>> available_positions() const;
+
 	private:
 		std::pair<std::pair<int, int>, std::pair<int, int>> generate_sequence_len1(const std::pair<int, int>& center, const Direction& direction);
 		bool is_valid_position(const std::pair<int, int> position);
@@ -79,10 +79,13 @@ class Board {
 
 		std::vector<Moves> _board; // 15 elements = first line
 		std::set<std::pair<int, int>> _available_positions; //positions on the board that have not being played yet
-		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> _sequences_first_player;
-		std::unordered_map<std::pair<int, int>, std::set<Sequence>, pairhash> _sequences_second_player;
+		std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash> _sequences_first_player;
+		std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash> _sequences_second_player;
 
 		std::set<std::pair<int, int>> get_neighbors(std::pair<int, int> p);
+		std::pair<std::pair<int, int>, Board::Sequence> select_sequence_by_position(
+		std::unordered_map<std::pair<int, int>, Board::Sequence, pairhash> seq,
+		std::pair<int, int> p);
 };
 
 #endif /* BOARD_H */

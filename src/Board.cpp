@@ -15,6 +15,7 @@ Board::Board(unsigned int size_x, unsigned int size_y) : _board(size_x * size_y,
 
 Board::~Board() {}
 
+// position need to be empty
 void Board::insert_move(std::pair<int, int> position, Moves player)
 {
 	//_board[((position.first) * SIZE) + position.second] = player; // position.first = line; position.second = col
@@ -33,18 +34,114 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 	}
 }
 
+// position can't be empty
 void Board::remove_move(std::pair<int, int> position)
 {
-	_board[((position.first) * SIZE) + position.second] = NONE;  // position.first = line; position.second = col
+	auto player = _board[((position.first-1) * SIZE) + position.second];
+	auto sequences = first_player_sequences();
+	if (player == SECONDPLAYER)
+		sequences = second_player_sequences();
+	else if (player == NONE) // check if position set a place on board that is empty
+		std::cout << "ERRO!!! Tentativa de apagar uma posição sem jogada!" << std::endl;
+
+	// get the positions around the position
+	std::set<std::pair<int, int>> neighbors = get_neighbors(position);
+	for(auto it : neighbors){
+		// the position  is a limit/point/extremity of a sequence;
+		if (_board[((it.first) * SIZE) + it.second] == NONE)
+		{
+			auto s = select_sequence_by_position(sequences[it], position); // selecionar a SEQUENCIA QUE CONTEM A POSITION!!!!
+			if (s.second.length > 1)
+			{
+				// create new sequence with position as the begin.
+				auto temp = s.second;
+				temp.length = s.second.length-1;
+				sequences[position][s.first] = temp;
+				// change other side.
+				sequences[s.first][position] = temp;
+
+				/*sequences.insert(std::make_pair<
+				std::pair<int, int>, std::unordered_map<std::pair<int, int>, Board::Sequence, pairhash>, pairhash
+					>(s.first, temp));*/
+			}
+			// delete sequence both directions. Just do it if s.second.length == 1
+			sequences[s.first].erase(position);
+			sequences[position].erase(s.first);
+		
+		}
+		else // not empty; maybe in the meddle of a sequence (check opposite position by direction)
+		{
+			///////continue!!!!
+		}
+	}			 
+	_board[((position.first) * SIZE) + position.second] = NONE;
 	_available_positions.insert(position);
-	//TODO figure out how to fix the sequences data structures
-	
-	// where the position is in the sequence?
-	// if in the limits/points/extremity: 
-	// create the new map on the nex position opened; 
-	
-	// in the middle: create two new sequences and delete the old one. 
-			 
+}
+
+// auxilia remove_move
+// seq = conjunto de sequencias que partem de uma posição
+// p = posição de uma EXTREMIDADE de uma sequencia
+// objetivo: retornar a sequencia de seq que contem p
+std::pair<std::pair<int, int>, Board::Sequence> select_sequence_by_position(
+			std::unordered_map<std::pair<int, int>, Board::Sequence, pairhash> seq,
+		    std::pair<int, int> p)
+{
+	for (s : seq)
+	{
+		if ((s.second.direction == HORIZONTAL || s.second.direction == LEFT) && /* \ */
+			(s.first.second == (p.second + s.second.length) || s.first.second == (p.second - s.second.length)))
+			return s;
+		else if ((s.second.direction == VERTICAL || s.second.direction == RIGHT) && 	/* / */
+				 (s.first.first == (p.first + s.second.length) ||  s.first.first == (p.first - s.second.length)))
+			return s;
+	}
+	std::cout << "ERRO!!! Conjunto de Sequencias não contem a posição procurada!" << std::endl;
+}
+
+std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
+{
+	if (p.first > 0 && p.first < 14 && p.second > 0 && p.second < 14)
+		return {std::make_pair(p.first,p.second-1),
+				std::make_pair(p.first-1,p.second-1),
+				std::make_pair(p.first-1,p.second),
+				std::make_pair(p.first-1,p.second+1),
+				std::make_pair(p.first,p.second+1),
+				std::make_pair(p.first+1,p.second+1),
+				std::make_pair(p.first+1,p.second),
+				std::make_pair(p.first+1,p.second-1)};
+	else if (p.first == 0 && p.second > 0 && p.second < 14)
+		return {std::make_pair(p.first,p.second-1),
+				std::make_pair(p.first,p.second+1),
+				std::make_pair(p.first+1,p.second+1),
+				std::make_pair(p.first+1,p.second),
+				std::make_pair(p.first+1,p.second-1)};
+	else if (p.first > 0 && p.first < 14 && p.second == 14)
+		return {std::make_pair(p.first,p.second-1),
+				std::make_pair(p.first-1,p.second-1),
+				std::make_pair(p.first-1,p.second),
+				std::make_pair(p.first+1,p.second),
+				std::make_pair(p.first+1,p.second-1)};
+	else if (p.first == 14 && p.second > 0 && p.second < 14)
+		return {std::make_pair(p.first,p.second-1),
+				std::make_pair(p.first-1,p.second-1),
+				std::make_pair(p.first-1,p.second),
+				std::make_pair(p.first-1,p.second+1),
+				std::make_pair(p.first,p.second+1)};
+	else if (p.first > 0 && p.first < 14 && p.second == 0)
+		return {std::make_pair(p.first-1,p.second),
+				std::make_pair(p.first-1,p.second+1),
+				std::make_pair(p.first,p.second+1),
+				std::make_pair(p.first+1,p.second+1),
+				std::make_pair(p.first+1,p.second)};
+	else if (p.first == 0 && p.second == 0)
+		return {std::make_pair(0,1), std::make_pair(1,1), std::make_pair(1,0)};
+	else if (p.first == 0 && p.second == 14)
+		return {std::make_pair(0,13), std::make_pair(1,14), std::make_pair(1,13)};
+	else if (p.first == 14 && p.second == 14)
+		return {std::make_pair(14,13), std::make_pair(13,13), std::make_pair(13,14)};
+	else if (p.first == 14 && p.second == 0)
+		return {std::make_pair(13,0), std::make_pair(13,1), std::make_pair(14,1)};
+
 }
 
 std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
