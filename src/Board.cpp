@@ -114,29 +114,17 @@ void Board::insert_sequences(Board::Sequences_map& sequences, const std::pair<in
 			seq2.other_is_open = it[1].second.other_is_open;
 			seq1.direction = it[0].second.direction;
 			seq2.direction = it[1].second.direction;
-			sequences[it[1].first][it[0].first] = seq1;
-			sequences[it[0].first][it[1].first] = seq2;
+			if(is_valid_position(it[1].first) && get_value_position(it[1].first) == NONE) {
+				sequences[it[1].first][it[0].first] = seq1;
+			} if(is_valid_position(it[0].first) && get_value_position(it[0].first) == NONE) {
+				sequences[it[0].first][it[1].first] = seq2;
+			}
 			dir = next_direction(dir);
 		} else { //no sequence, create new sequence in this direction
 			std::pair<int, int> edge1, edge2;
-			switch(dir) {
-				case VERTICAL:
-					edge1 = {move.first - 1, move.second}; //above
-					edge2 = {move.first + 1, move.second}; //below
-					break;
-				case HORIZONTAL:
-					edge1 = {move.first, move.second - 1}; //to the left
-					edge2 = {move.first, move.second + 1}; //to the right
-					break;
-				case LEFT:
-					edge1 = {move.first - 1, move.second - 1}; //above and left
-					edge2 = {move.first + 1, move.second + 1}; //below and right
-					break;
-				case RIGHT:
-					edge1 = {move.first - 1, move.second + 1}; //above and right
-					edge2 = {move.first + 1, move.second - 1}; //below and left
-					break;
-			}
+			auto a = generate_sequence_len1(move, dir);
+			edge1 = a.first;
+			edge2 = a.second;
 			bool is_open = is_valid_position(edge2) && get_value_position(edge2) == NONE;
 			if(is_valid_position(edge1)) {
 				//sequences[edge1].insert(Sequence(1, edge2, is_open, dir));
@@ -150,6 +138,34 @@ void Board::insert_sequences(Board::Sequences_map& sequences, const std::pair<in
 			dir = next_direction(dir);
 		}
 	}
+}
+
+/*This methot generate the length 1 sequence in the direction
+ * center the center position for the sequence
+ * direction the direction of the sequence
+ * */
+std::pair<std::pair<int, int>, std::pair<int, int>> Board::generate_sequence_len1(const std::pair<int, int>& center, const Direction& direction)
+{
+	std::pair<int, int> edge1, edge2;
+	switch(direction) {
+		case VERTICAL:
+			edge1 = {center.first - 1, center.second}; //above
+			edge2 = {center.first + 1, center.second}; //below
+			break;
+		case HORIZONTAL:
+			edge1 = {center.first, center.second - 1}; //to the left
+			edge2 = {center.first, center.second + 1}; //to the right
+			break;
+		case LEFT:
+			edge1 = {center.first - 1, center.second - 1}; //above and left
+			edge2 = {center.first + 1, center.second + 1}; //below and right
+			break;
+		case RIGHT:
+			edge1 = {center.first - 1, center.second + 1}; //above and right
+			edge2 = {center.first + 1, center.second - 1}; //below and left
+			break;
+	}
+	return {edge1, edge2};
 }
 
 bool Board::is_valid_position(const std::pair<int, int> position)

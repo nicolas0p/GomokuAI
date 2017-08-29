@@ -69,6 +69,7 @@ class Board {
 		Sequences_map second_player_sequences() const;
 
 	private:
+		std::pair<std::pair<int, int>, std::pair<int, int>> generate_sequence_len1(const std::pair<int, int>& center, const Direction& direction);
 		bool is_valid_position(const std::pair<int, int> position);
 		//Helper function to help find the next opening for a sequence after a move has been played
 		std::pair<int, int> next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move);
