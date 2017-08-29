@@ -140,7 +140,7 @@ void Board::insert_sequences(Board::Sequences_map& sequences, const std::pair<in
 	}
 }
 
-/*This methot generate the length 1 sequence in the direction
+/*This method generate the length 1 sequence in the direction
  * center the center position for the sequence
  * direction the direction of the sequence
  * */
@@ -193,24 +193,23 @@ std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pai
 				return {move.first + 1, move.second}; //below
 			}
 			return {move.first - 1, move.second}; //above
-			break;
 		case HORIZONTAL:
 			if(move.second > opening.second) {
 				return {move.first, move.second + 1}; //to the right
 			}
 			return {move.first, move.second - 1}; //to the left
-			break;
 		case LEFT:
 			if(move.first > opening.first) {
 				return {move.first + 1, move.second + 1}; //to the right and below
 			}
 			return {move.first - 1, move.second - 1}; //to the left and above
-			break;
 		case RIGHT:
 			if(move.first > opening.first) {
 				return {move.first + 1, move.second - 1}; //to the left and below
 			}
 			return {move.first - 1, move.second + 1}; //to the right and above
+		default:
+			throw "error 404: direction not found";
 	}
 }
 
