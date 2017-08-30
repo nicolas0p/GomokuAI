@@ -6,8 +6,8 @@
 
 Board::Board(unsigned int size_x, unsigned int size_y) : _board(size_x * size_y, NONE)
 {
-	for(int i = 0; i < size_x; ++i) {
-		for(int j = 0; j < size_y; ++j) {
+	for(unsigned int i = 0; i < size_x; ++i) {
+		for(unsigned int j = 0; j < size_y; ++j) {
 			_available_positions.insert(std::pair<int, int>{i, j});
 		}
 	}

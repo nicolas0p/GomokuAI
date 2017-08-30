@@ -17,7 +17,7 @@ class Player {
 		void add_points(int p);
 		int get_points();
 		Board::Moves get_player();
-		
+
 	protected:
 		int _point;
 		const Board _board;
