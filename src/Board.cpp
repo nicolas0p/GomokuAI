@@ -37,7 +37,7 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 // position can't be empty
 void Board::remove_move(std::pair<int, int> position)
 {
-	auto player = _board[((position.first-1) * SIZE) + position.second];
+	auto player = _board[((position.first) * SIZE) + position.second];
 	auto sequences = first_player_sequences();
 	if (player == SECONDPLAYER)
 		sequences = second_player_sequences();
@@ -67,7 +67,7 @@ void Board::remove_move(std::pair<int, int> position)
 			// delete sequence both directions. Just do it if s.second.length == 1
 			sequences[s.first].erase(position);
 			sequences[position].erase(s.first);
-		
+
 		}
 		// not empty; maybe in the middle of a sequence (check opposite position by direction)
 		else if (_board[((it.first) * SIZE) + it.second] == player) // peça vizinha é do mesmo jogador
@@ -80,7 +80,7 @@ void Board::remove_move(std::pair<int, int> position)
 		{
 			// set true other_is_open some adverser's sequences
 		}
-	}			 
+	}
 	_board[((position.first) * SIZE) + position.second] = NONE;
 	_available_positions.insert(position);
 }
@@ -103,6 +103,7 @@ std::pair<int,int> Board::get_opposite_position(std::pair<int,int> neighbor, std
 		return std::make_pair(position.first+1,position.second-1);
 	else if ((neighbor.first > position.first) && (neighbor.second < position.second) ) // / up
 		return std::make_pair(position.first-1,position.second+1);
+	throw "error 404: opposite position not found";
 }
 
 // auxilia remove_move
@@ -113,7 +114,7 @@ std::pair<std::pair<int, int>, Board::Sequence> Board::select_sequence_by_positi
 			std::unordered_map<std::pair<int, int>, Board::Sequence, pairhash> seq,
 		    std::pair<int, int> p)
 {
-	for (s : seq)
+	for (auto s : seq)
 	{
 		if ((s.second.direction == HORIZONTAL || s.second.direction == LEFT) && /* \ */
 			(s.first.second == (p.second + s.second.length) || s.first.second == (p.second - s.second.length)))
@@ -122,7 +123,7 @@ std::pair<std::pair<int, int>, Board::Sequence> Board::select_sequence_by_positi
 				 (s.first.first == (p.first + s.second.length) ||  s.first.first == (p.first - s.second.length)))
 			return s;
 	}
-	std::cout << "ERRO!!! Conjunto de Sequencias não contem a posição procurada!" << std::endl;
+	throw "ERRO!!! Conjunto de Sequencias não contem a posição procurada!";
 }
 
 std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
@@ -168,24 +169,7 @@ std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
 		return {std::make_pair(14,13), std::make_pair(13,13), std::make_pair(13,14)};
 	else if (p.first == 14 && p.second == 0)
 		return {std::make_pair(13,0), std::make_pair(13,1), std::make_pair(14,1)};
-
-}
-
-std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
-{
-	if (p.first > 0 && p.first < 14 && p.second > 0 && p.second < 14)
-		return {std::make_pair(p.first,p.second-1), 
-				std::make_pair(p.first-1,p.second-1),
-				std::make_pair(p.first-1,p.second),
-				std::make_pair(p.first-1,p.second+1),
-				std::make_pair(p.first,p.second+1),
-				std::make_pair(p.first+1,p.second+1),
-				std::make_pair(p.first+1,p.second),
-				std::make_pair(p.first+1,p.second-1)};
-	else if (p.first == 0 && p.second > 0 && p.second < 14)
-	else if (p.first == 0 && p.second == 0)
-	else if (p.first == 0 && p.second > 0 && p.second < 14)
-	else if (p.first == 14)
+	throw "Error 404: neighbor not found";
 }
 
 Board::Moves Board::get_value_position(std::pair<int, int> position) const
