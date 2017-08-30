@@ -11,7 +11,7 @@ using std::unique_ptr;
 
 class Game {
 	public:
-		Game(Board board, unique_ptr<Player> first_player, unique_ptr<Player> second_player, unique_ptr<UserInterface> && user_interface);
+		Game(Board board, unique_ptr<Player> first_player, unique_ptr<Player> second_player, unique_ptr<UserInterface> user_interface);
 		virtual ~Game();
 		void start_game();
 		void help();
