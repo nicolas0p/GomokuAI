@@ -45,3 +45,10 @@ TEST(InsertMoveInBoard, 2by2SquareSequence) {
 	board.insert_move({6,5}, Board::FIRSTPLAYER);
 	EXPECT_EQ(6*2*300 + 2*4, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
+
+TEST(RemoveMoveFromBoard, OneMove) {
+	Board board(SIZE, SIZE);
+	board.insert_move({5,5}, Board::FIRSTPLAYER);
+	board.remove_move({5,5});
+	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
+}
