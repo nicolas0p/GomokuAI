@@ -85,8 +85,9 @@ class Board {
 		std::set<std::pair<int, int>> get_neighbors(std::pair<int, int> p);
 		std::pair<std::pair<int, int>, Board::Sequence> select_sequence_by_position(
 				std::unordered_map<std::pair<int, int>, Board::Sequence, pairhash> seq,std::pair<int, int> p);
-		std::pair<std::pair<int,int>,Board::Direction> get_opposite_position(std::pair<int,int> n, std::pair<int,int> p);
-		std::pair<int, int> find_begin_sequence(Sequences_map s, std::pair<int,int> p, Board::Direction d);
+		std::pair<std::pair<int,int>, Direction> get_opposite_position(std::pair<int,int> n, std::pair<int,int> p);
+		std::pair<int, int> find_begin_sequence(Sequences_map s, std::pair<int,int> p, Direction d);
+		int calculate_lenght(std::pair<int, int> begin, std::pair<int, int> end, Direction d);
 };
 
 #endif /* BOARD_H */

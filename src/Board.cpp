@@ -50,7 +50,7 @@ void Board::remove_move(std::pair<int, int> position)
 		// the position  is a limit/point/extremity of a sequence;
 		if (_board[((it.first) * SIZE) + it.second] == NONE)
 		{
-			auto s = select_sequence_by_position(sequences[it], position); // selecionar a SEQUENCIA QUE CONTEM A POSITION!!!!
+			auto s = select_sequence_by_position(sequences[it], position); 
 			if (s.second.length > 1)
 			{
 				// create new sequence with position as the begin.
@@ -68,15 +68,22 @@ void Board::remove_move(std::pair<int, int> position)
 		// not empty; maybe in the middle of a sequence (check opposite position by direction)
 		else if (_board[((it.first) * SIZE) + it.second] == player) // neighbor is a position where ther is a player' move
 		{
-			std::pair<std::pair<int,int>,Board::Direction> opposite = get_opposite_position(it,position);
-			if (opposite.first >= 0 && opposite.second >= 0) // validating opposite
+			std::pair<std::pair<int,int>, Direction> opposite = get_opposite_position(it,position);
+			if (opposite.first.first >= 0 && opposite.first.second >= 0) // validating opposite
 			{
 				if (_board[((opposite.first.first) * SIZE) + opposite.first.second] == player)
 				{
 					// call recursive function to find the sequence's extremity; 
-					std::pair<int, int> begin = find_begin_sequence(sequences, std::pair<int,int> p, oppsite.second);
-					// than create two new sequences and delete the old one;
-					
+					std::pair<int, int> begin = find_begin_sequence(sequences, opposite.first, opposite.second);
+					auto end_seq = select_sequence_by_position(sequences[begin], position); 
+					// than create two new sequences 
+///// essa parte pode ser executada duas vezes, gerando redundancia/problemas no BD
+					sequences[begin][position] = Sequence(calculate_lenght(begin,position,opposite.second), true,  opposite.second);
+					sequences[position][end_seq.first] = Sequence(calculate_lenght(position,end_seq.first,opposite.second),true, opposite.second);
+					// and delete the old ones;
+					sequences[begin].erase(end_seq.first);
+					sequences[end_seq.first].erase(begin);
+////		
 				}
 				else if (_board[((opposite.first.first) * SIZE) + opposite.first.second] != NONE) // adverser
 				{
@@ -86,7 +93,7 @@ void Board::remove_move(std::pair<int, int> position)
 				}
 				//else (_board[((opposite.first) * SIZE) + opposite.second] == NONE) ignored, because it will already be taken care...
 			}
-			else // the opposite will not be used, because gos out of board...
+			else // the opposite will not be used, because goes out of board...
 			{
 				// 
 			}
@@ -98,43 +105,63 @@ void Board::remove_move(std::pair<int, int> position)
 	_available_positions.insert(position);
 }
 
-std::pair<int, int> Board::find_begin_sequence(Sequences_map s, std::pair<int,int> p, Board::Direction d)
+int Board::calculate_lenght(std::pair<int, int> begin, std::pair<int, int> end, Direction direction)
 {
-	if (d == Board::VERTICAL)
+	int l;
+	switch(direction) {
+		case VERTICAL:
+			l = (begin.first - end.first - 1);
+		case HORIZONTAL:
+			l = (begin.second - end.second - 1);
+		case LEFT:
+			l = (begin.second - end.second - 1);
+		case RIGHT:
+			l = (begin.first - end.first - 1);
+	}
+	
+	if (l<0)
+		throw ("Error! lenght less than 0.");
+
+	return l;
+}
+
+std::pair<int, int> Board::find_begin_sequence(Sequences_map s, std::pair<int,int> p, Direction d)
+{
+	if (d == VERTICAL)
 		p = std::make_pair(p.first-1, p.second);
-	else if (d == Board::HORIZONTAL)
+	else if (d == HORIZONTAL)
 		p = std::make_pair(p.first, p.second-1);
-	else if (d == Board::LEFT) /* \ */
+	else if (d == LEFT) /* \ */
 		p = std::make_pair(p.first-1, p.second-1);
-	else // if (d == Board::RIGHT)/* / */
+	else // if (d == RIGHT)/* / */
 		p = std::make_pair(p.first-1, p.second+1);
 
 	//std::unordered_map<std::string,double>::const_iterator got = s.find(p);
 	if ( s.find(p) != s.end() )  //if ( got != s.end() ) 
-		return begin;
+		return p;
 
 	//"not found"
-	return find_begin_sequence(s, begin, d);
+	return find_begin_sequence(s, p, d);
 }
 
-std::pair<std::pair<int,int>,Board::Direction> Board::get_opposite_position(std::pair<int,int> neighbor, std::pair<int,int> position)
+std::pair<std::pair<int,int>, Direction> Board::get_opposite_position(std::pair<int,int> neighbor, std::pair<int,int> position)
 {
 	if ((neighbor.first == position.first) && (neighbor.second > position.second) ) // HORIZONTAL -->
-		return std::make_pair(std::make_pair(position.first,position.second-1), Board::HORIZONTAL);
+		return std::make_pair(std::make_pair(position.first,position.second-1), HORIZONTAL);
 	else if ((neighbor.first == position.first) && (neighbor.second < position.second) ) // HORIZONTAL <--
-		return std::make_pair(std::make_pair(position.first,position.second+1), Board::HORIZONTAL);
+		return std::make_pair(std::make_pair(position.first,position.second+1), HORIZONTAL);
 	else if ((neighbor.first < position.first) && (neighbor.second < position.second) ) // \ down
-		return std::make_pair(std::make_pair(position.first+1,position.second+1), Board::LEFT);
+		return std::make_pair(std::make_pair(position.first+1,position.second+1), LEFT);
 	else if ((neighbor.first > position.first) && (neighbor.second > position.second) ) // \ up
-		return std::make_pair(std::make_pair(position.first-1,position.second-1), Board::LEFT);
+		return std::make_pair(std::make_pair(position.first-1,position.second-1), LEFT);
 	else if ((neighbor.first > position.first) && (neighbor.second == position.second) ) // VERTICAL ^
-		return std::make_pair(std::make_pair(position.first-1,position.second), Board::VERTICAL);
+		return std::make_pair(std::make_pair(position.first-1,position.second), VERTICAL);
 	else if ((neighbor.first < position.first) && (neighbor.second == position.second) ) // VERTICAL v
-		return std::make_pair(std::make_pair(position.first+1,position.second), Board::VERTICAL);
+		return std::make_pair(std::make_pair(position.first+1,position.second), VERTICAL);
 	else if ((neighbor.first < position.first) && (neighbor.second > position.second) ) // / down
-		return std::make_pair(std::make_pair(position.first+1,position.second-1), Board::RIGHT);
+		return std::make_pair(std::make_pair(position.first+1,position.second-1), RIGHT);
 	else if ((neighbor.first > position.first) && (neighbor.second < position.second) ) // / up
-		return std::make_pair(std::make_pair(position.first-1,position.second+1), Board::RIGHT);
+		return std::make_pair(std::make_pair(position.first-1,position.second+1), RIGHT);
 	throw "error 404: opposite position not found";
 }
 
