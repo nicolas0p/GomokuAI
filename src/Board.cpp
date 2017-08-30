@@ -69,13 +69,40 @@ void Board::remove_move(std::pair<int, int> position)
 			sequences[position].erase(s.first);
 		
 		}
-		else // not empty; maybe in the meddle of a sequence (check opposite position by direction)
+		// not empty; maybe in the middle of a sequence (check opposite position by direction)
+		else if (_board[((it.first) * SIZE) + it.second] == player) // peça vizinha é do mesmo jogador
 		{
-			///////continue!!!!
+			// AKI!!!
+			// PEÇAS OPOSITORAS SERÃO UTEIS? CUIDAR COM AS BORDAS..
+			get_opposite_position(it,position);
+		}
+		else // peça vizinha é do jogador adversário
+		{
+			// set true other_is_open some adverser's sequences
 		}
 	}			 
 	_board[((position.first) * SIZE) + position.second] = NONE;
 	_available_positions.insert(position);
+}
+
+std::pair<int,int> Board::get_opposite_position(std::pair<int,int> neighbor, std::pair<int,int> position)
+{
+	if ((neighbor.first == position.first) && (neighbor.second > position.second) ) // HORIZONTAL -->
+		return std::make_pair(position.first,position.second-1);
+	else if ((neighbor.first == position.first) && (neighbor.second < position.second) ) // HORIZONTAL <--
+		return std::make_pair(position.first,position.second+1);
+	else if ((neighbor.first < position.first) && (neighbor.second < position.second) ) // \ down
+		return std::make_pair(position.first+1,position.second+1);
+	else if ((neighbor.first > position.first) && (neighbor.second > position.second) ) // \ up
+		return std::make_pair(position.first-1,position.second-1);
+	else if ((neighbor.first > position.first) && (neighbor.second == position.second) ) // VERTICAL ^
+		return std::make_pair(position.first-1,position.second);
+	else if ((neighbor.first < position.first) && (neighbor.second == position.second) ) // VERTICAL v
+		return std::make_pair(position.first+1,position.second);
+	else if ((neighbor.first < position.first) && (neighbor.second > position.second) ) // / down
+		return std::make_pair(position.first+1,position.second-1);
+	else if ((neighbor.first > position.first) && (neighbor.second < position.second) ) // / up
+		return std::make_pair(position.first-1,position.second+1);
 }
 
 // auxilia remove_move
