@@ -3,6 +3,7 @@
 #include "Minimax.h"
 #include "Board.h"
 #include "Heuristic.h"
+#include "MoveGenerator.h"
 #include "traits.h"
 
 TEST(InsertMoveInBoard, OneMove) {
@@ -75,3 +76,12 @@ TEST(InsertMoveInBoard, InsertSecondPlayerMoveClose) {
 	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
 }*/
 
+TEST(Minimax, Depth1OnePlayer) {
+	Board board(SIZE, SIZE);
+	board.insert_move({5,5}, Board::FIRSTPLAYER);
+	Minimax minimax(sum_sequence_values, simple_move_generator, 1, Board::FIRSTPLAYER);
+	auto move = minimax.get_move(board);
+	board.insert_move(move, Board::FIRSTPLAYER);
+	EXPECT_EQ(300*2 + 6*2, sum_sequence_values(board, Board::FIRSTPLAYER));
+
+}
