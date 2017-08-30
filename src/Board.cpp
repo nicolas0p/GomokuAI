@@ -27,10 +27,10 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 	_available_positions.erase(position);
 	if(player == Board::FIRSTPLAYER) {
 		insert_move_self_sequences(_sequences_first_player, position);
-		insert_move_other_people_sequences(_sequences_second_player, position);
+		insert_move_other_player_sequences(_sequences_second_player, position);
 	} else {
 		insert_move_self_sequences(_sequences_second_player, position);
-		insert_move_other_people_sequences(_sequences_first_player, position);
+		insert_move_other_player_sequences(_sequences_first_player, position);
 	}
 }
 
@@ -256,15 +256,15 @@ void Board::insert_move_self_sequences(Board::Sequences_map& sequences, const st
 			auto a = generate_sequence_len1(move, dir);
 			edge1 = a.first;
 			edge2 = a.second;
-			bool is_open = is_valid_position(edge2) && get_value_position(edge2) == NONE;
-			if(is_valid_position(edge1)) {
+			bool is_open2 = is_valid_position(edge2) && get_value_position(edge2) == NONE;
+			bool is_open1 = is_valid_position(edge1) && get_value_position(edge1) == NONE;
+			if(is_open1) {
 				//sequences[edge1].insert(Sequence(1, edge2, is_open, dir));
-				sequences[edge1][edge2] = Sequence(1, is_open, dir);
+				sequences[edge1][edge2] = Sequence(1, is_open2, dir);
 			}
-			is_open = is_valid_position(edge1) && get_value_position(edge1) == NONE;
-			if(is_valid_position(edge2)) {
+			if(is_open2) {
 				//sequences[edge2].insert(Sequence(1, edge1, is_open, dir));
-				sequences[edge2][edge1] = Sequence(1, is_open, dir);
+				sequences[edge2][edge1] = Sequence(1, is_open1, dir);
 			}
 			dir = next_direction(dir);
 		}
@@ -312,7 +312,7 @@ Direction next_direction(const Direction& direction)
 
 /* Handles the sequences structures. This method should be called with the sequences of the player that is NOT making the move now. It will remove the openings of the sequences where the move lands.
  **/
-void Board::insert_move_other_people_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
+void Board::insert_move_other_player_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
 {
 	auto to_decrease = sequences[move]; //contains the sequences that will be decreased
 	for(auto other : to_decrease)

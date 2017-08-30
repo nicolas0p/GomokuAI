@@ -20,6 +20,13 @@ TEST(InsertMoveInBoard, TwoHorizontalNextMoves) {
 	EXPECT_EQ(305, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
+TEST(InsertMoveInBoard, TwoHorizontalNextMovesNotEdge) {
+	Board board(SIZE, SIZE);
+	board.insert_move({5,5}, Board::FIRSTPLAYER);
+	board.insert_move({5,6}, Board::FIRSTPLAYER);
+	EXPECT_EQ(2*300+12, sum_sequence_values(board, Board::FIRSTPLAYER));
+}
+
 TEST(InsertMoveInBoard, MergingTwoSequences) {
 	Board board(SIZE, SIZE);
 	board.insert_move({0,0}, Board::FIRSTPLAYER);
@@ -46,11 +53,19 @@ TEST(InsertMoveInBoard, 2by2SquareSequence) {
 	EXPECT_EQ(6*2*300 + 2*4, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
-TEST(InsertMoveInBoard, InsertSecondPlayerMove) {
+TEST(InsertMoveInBoard, InsertSecondPlayerMoveFar) {
 	Board board(SIZE, SIZE);
 	board.insert_move({5,5}, Board::FIRSTPLAYER);
 	board.insert_move({10,10}, Board::SECONDPLAYER);
 	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
+}
+
+TEST(InsertMoveInBoard, InsertSecondPlayerMoveClose) {
+	Board board(SIZE, SIZE);
+	board.insert_move({5,5}, Board::FIRSTPLAYER);
+	board.insert_move({5,6}, Board::FIRSTPLAYER);
+	board.insert_move({5,7}, Board::SECONDPLAYER);
+	EXPECT_EQ(300+12-7, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
 /*TEST(RemoveMoveFromBoard, OneMove) {

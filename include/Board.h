@@ -75,7 +75,7 @@ class Board {
 		std::pair<int, int> next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move);
 		//these two functions take care of keeping the sequences data structures in order after insertir or removing a move
 		void insert_move_self_sequences(std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash>& sequences, const std::pair<int, int>& move);
-		void insert_move_other_people_sequences(std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash>& sequences, const std::pair<int, int>& move);
+		void insert_move_other_player_sequences(std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash>& sequences, const std::pair<int, int>& move);
 
 		std::vector<Moves> _board; // 15 elements = first line
 		std::set<std::pair<int, int>> _available_positions; //positions on the board that have not being played yet
