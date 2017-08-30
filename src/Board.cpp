@@ -82,7 +82,7 @@ void Board::remove_move(std::pair<int, int> position)
 // seq = conjunto de sequencias que partem de uma posição
 // p = posição de uma EXTREMIDADE de uma sequencia
 // objetivo: retornar a sequencia de seq que contem p
-std::pair<std::pair<int, int>, Board::Sequence> select_sequence_by_position(
+std::pair<std::pair<int, int>, Board::Sequence> Board::select_sequence_by_position(
 			std::unordered_map<std::pair<int, int>, Board::Sequence, pairhash> seq,
 		    std::pair<int, int> p)
 {
