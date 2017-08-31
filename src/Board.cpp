@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <stdexcept>
 
 #include "Board.h"
 #include "traits.h"
@@ -42,7 +43,7 @@ void Board::remove_move(std::pair<int, int> position)
 	if (player == SECONDPLAYER)
 		sequences = second_player_sequences();
 	else if (player == NONE) // check if position set a place on board that is empty
-		std::cout << "ERRO!!! Tentativa de apagar uma posição sem jogada!" << std::endl;
+		throw std::runtime_error("ERRO!!! Tentativa de apagar uma posição sem jogada!");
 
 	// get the positions around the position
 	std::set<std::pair<int, int>> neighbors = get_neighbors(position);
@@ -103,7 +104,7 @@ std::pair<int,int> Board::get_opposite_position(std::pair<int,int> neighbor, std
 		return std::make_pair(position.first+1,position.second-1);
 	else if ((neighbor.first > position.first) && (neighbor.second < position.second) ) // / up
 		return std::make_pair(position.first-1,position.second+1);
-	throw "error 404: opposite position not found";
+	throw std::runtime_error("error 404: opposite position not found");
 }
 
 // auxilia remove_move
@@ -123,7 +124,7 @@ std::pair<std::pair<int, int>, Board::Sequence> Board::select_sequence_by_positi
 				 (s.first.first == (p.first + s.second.length) ||  s.first.first == (p.first - s.second.length)))
 			return s;
 	}
-	throw "ERRO!!! Conjunto de Sequencias não contem a posição procurada!";
+	throw std::runtime_error("ERRO!!! Conjunto de Sequencias não contem a posição procurada!");
 }
 
 std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
@@ -169,7 +170,7 @@ std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
 		return {std::make_pair(14,13), std::make_pair(13,13), std::make_pair(13,14)};
 	else if (p.first == 14 && p.second == 0)
 		return {std::make_pair(13,0), std::make_pair(13,1), std::make_pair(14,1)};
-	throw "Error 404: neighbor not found";
+	throw std::runtime_error("Error 404: neighbor not found");
 }
 
 Board::Moves Board::get_value_position(std::pair<int, int> position) const
@@ -354,7 +355,7 @@ std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pai
 			}
 			return {move.first - 1, move.second + 1}; //to the right and above
 		default:
-			throw "error 404: direction not found";
+			throw std::runtime_error("error 404: direction not found");
 	}
 }
 
