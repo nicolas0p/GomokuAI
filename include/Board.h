@@ -31,7 +31,7 @@ class Board {
 		};
 
 		Board(unsigned int size_x, unsigned int size_y);
-		~Board();
+		~Board() {}
 		//Contains a sequence length and other opening
 		//other_is_open contains if the other opening is open
 		struct Sequence {
@@ -69,24 +69,25 @@ class Board {
 		std::set<std::pair<int, int>> available_positions() const;
 
 	private:
-		std::pair<std::pair<int, int>, std::pair<int, int>> generate_sequence_len1(const std::pair<int, int>& center, const Direction& direction);
-		bool is_valid_position(const std::pair<int, int> position);
+		std::pair<std::pair<int, int>, std::pair<int, int>> generate_sequence_len1(const std::pair<int, int>& center, const Direction& direction) const;
+		bool is_valid_position(const std::pair<int, int> position) const;
 		//Helper function to help find the next opening for a sequence after a move has been played
-		std::pair<int, int> next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move);
+		std::pair<int, int> next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move) const;
 		//these two functions take care of keeping the sequences data structures in order after insertir or removing a move
 		void insert_move_self_sequences(std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash>& sequences, const std::pair<int, int>& move);
 		void insert_move_other_player_sequences(std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash>& sequences, const std::pair<int, int>& move);
 
 		std::vector<Moves> _board; // 15 elements = first line
 		std::set<std::pair<int, int>> _available_positions; //positions on the board that have not being played yet
-		std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash> _sequences_first_player;
-		std::unordered_map<std::pair<int, int>, std::unordered_map<std::pair<int, int>, Sequence, pairhash>, pairhash> _sequences_second_player;
+		Sequences_map _sequences_first_player;
+		Sequences_map _sequences_second_player;
 
 		std::set<std::pair<int, int>> get_neighbors(std::pair<int, int> p);
-		std::pair<std::pair<int, int>, Board::Sequence> select_sequence_by_position(
-		std::unordered_map<std::pair<int, int>, Board::Sequence, pairhash> seq,
-		std::pair<int, int> p);
+		std::pair<std::pair<int, int>, Board::Sequence> select_sequence_by_position(std::unordered_map<std::pair<int, int>, Board::Sequence, pairhash> seq, std::pair<int, int> p);
 		std::pair<int,int> get_opposite_position(std::pair<int,int> n, std::pair<int,int> p);
+
+		Moves winner() const;
+		Moves _winner;
 };
 
 #endif /* BOARD_H */

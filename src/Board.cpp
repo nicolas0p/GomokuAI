@@ -5,7 +5,7 @@
 #include "Board.h"
 #include "traits.h"
 
-Board::Board(unsigned int size_x, unsigned int size_y) : _board(size_x * size_y, NONE)
+Board::Board(unsigned int size_x, unsigned int size_y) : _board(size_x * size_y, NONE),	_winner(NONE)
 {
 	for(unsigned int i = 0; i < size_x; ++i) {
 		for(unsigned int j = 0; j < size_y; ++j) {
@@ -13,8 +13,6 @@ Board::Board(unsigned int size_x, unsigned int size_y) : _board(size_x * size_y,
 		}
 	}
 }
-
-Board::~Board() {}
 
 // position need to be empty
 void Board::insert_move(std::pair<int, int> position, Moves player)
@@ -276,7 +274,7 @@ void Board::insert_move_self_sequences(Board::Sequences_map& sequences, const st
  * center the center position for the sequence
  * direction the direction of the sequence
  * */
-std::pair<std::pair<int, int>, std::pair<int, int>> Board::generate_sequence_len1(const std::pair<int, int>& center, const Direction& direction)
+std::pair<std::pair<int, int>, std::pair<int, int>> Board::generate_sequence_len1(const std::pair<int, int>& center, const Direction& direction) const
 {
 	std::pair<int, int> edge1, edge2;
 	switch(direction) {
@@ -300,7 +298,7 @@ std::pair<std::pair<int, int>, std::pair<int, int>> Board::generate_sequence_len
 	return {edge1, edge2};
 }
 
-bool Board::is_valid_position(const std::pair<int, int> position)
+bool Board::is_valid_position(const std::pair<int, int> position) const
 {
 	return !(position.first < 0 || position.second < 0 || position.first >= SIZE || position.second >= SIZE );
 }
@@ -331,7 +329,7 @@ void Board::insert_move_other_player_sequences(Board::Sequences_map& sequences, 
 	sequences.erase(move);
 }
 
-std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move)
+std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move) const
 {
 	switch(sequence.direction) {
 		case VERTICAL:
@@ -367,4 +365,9 @@ Board::Sequences_map Board::first_player_sequences() const
 Board::Sequences_map Board::second_player_sequences() const
 {
 	return _sequences_second_player;
+}
+
+Board::Moves Board::winner() const
+{
+	return _winner;
 }
