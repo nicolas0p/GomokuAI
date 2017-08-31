@@ -34,15 +34,16 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 	}
 }
 
+
 // position can't be empty
 void Board::remove_move(std::pair<int, int> position)
 {
 	auto player = _board[((position.first) * SIZE) + position.second];
-	auto sequences = first_player_sequences();
-	auto seq_advers = second_player_sequences();
+	auto sequences = _sequences_first_player; //first_player_sequences();
+	auto seq_advers = _sequences_second_player; // second_player_sequences();
 	if (player == SECONDPLAYER){
-		sequences = second_player_sequences();
-		seq_advers = second_player_sequences();
+		sequences = _sequences_second_player; //second_player_sequences();
+		seq_advers = _sequences_first_player; // second_player_sequences();
 	}
 	else if (player == NONE) // check if position set a place on board that is empty
 		std::cout << "ERRO!!! Tentativa de apagar uma posição sem jogada!" << std::endl;
@@ -54,7 +55,20 @@ void Board::remove_move(std::pair<int, int> position)
 		// the position  is a limit/point/extremity of a sequence;
 		if (v_neighbor == NONE)
 		{
-			aux_remove_move(sequences, it, position);
+			//aux_remove_move(sequences, it, position);
+			auto s = select_sequence_by_position(sequences[it], position); 
+			if (s.second.length > 1)
+			{
+				// create new sequence with position as the begin.
+				auto temp = s.second;
+				temp.length = s.second.length-1;
+				sequences[position][s.first] = temp;
+				// change other side.
+				sequences[s.first][position] = temp;
+				sequences[s.first].erase(position);
+			}
+			// Just do it if s.second.length == 1
+			sequences[position].erase(s.first);
 		}
 		// not empty; maybe in the middle of a sequence (check opposite position by direction)
 		else if (v_neighbor == player) // neighbor is a position where there is a player' move
@@ -99,7 +113,7 @@ void Board::remove_move(std::pair<int, int> position)
 	_available_positions.insert(position);
 }
 
-void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int> it, std::pair<int, int> position)
+void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int>& it, std::pair<int, int>& position)
 {
 	auto s = select_sequence_by_position(sequences[it], position); 
 	if (s.second.length > 1)
@@ -110,9 +124,9 @@ void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int>
 		sequences[position][s.first] = temp;
 		// change other side.
 		sequences[s.first][position] = temp;
+		sequences[s.first].erase(position);
 	}
-	// delete sequence both directions. Just do it if s.second.length == 1
-	sequences[s.first].erase(position);
+	// Just do it if s.second.length == 1
 	sequences[position].erase(s.first);
 }
 
