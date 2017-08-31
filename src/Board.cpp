@@ -55,20 +55,7 @@ void Board::remove_move(std::pair<int, int> position)
 		// the position  is a limit/point/extremity of a sequence;
 		if (v_neighbor == NONE)
 		{
-			//aux_remove_move(sequences, it, position);
-			auto s = select_sequence_by_position(sequences[it], position); 
-			if (s.second.length > 1)
-			{
-				// create new sequence with position as the begin.
-				auto temp = s.second;
-				temp.length = s.second.length-1;
-				sequences[position][s.first] = temp;
-				// change other side.
-				sequences[s.first][position] = temp;
-				sequences[s.first].erase(position);
-			}
-			// Just do it if s.second.length == 1
-			sequences[position].erase(s.first);
+			aux_remove_move(sequences, it, position);
 		}
 		// not empty; maybe in the middle of a sequence (check opposite position by direction)
 		else if (v_neighbor == player) // neighbor is a position where there is a player' move
@@ -124,10 +111,10 @@ void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int>
 		sequences[position][s.first] = temp;
 		// change other side.
 		sequences[s.first][position] = temp;
-		sequences[s.first].erase(position);
+		sequences[s.first].erase(it);
 	}
 	// Just do it if s.second.length == 1
-	sequences[position].erase(s.first);
+	sequences[it].erase(s.first);
 }
 
 int Board::calculate_lenght(std::pair<int, int> begin, std::pair<int, int> end, Direction direction)
