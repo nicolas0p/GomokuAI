@@ -39,70 +39,81 @@ void Board::remove_move(std::pair<int, int> position)
 {
 	auto player = _board[((position.first) * SIZE) + position.second];
 	auto sequences = first_player_sequences();
-	if (player == SECONDPLAYER)
+	auto seq_advers = second_player_sequences();
+	if (player == SECONDPLAYER){
 		sequences = second_player_sequences();
+		seq_advers = second_player_sequences();
+	}
 	else if (player == NONE) // check if position set a place on board that is empty
 		std::cout << "ERRO!!! Tentativa de apagar uma posição sem jogada!" << std::endl;
 
 	// get the positions around the position
 	std::set<std::pair<int, int>> neighbors = get_neighbors(position);
 	for(auto it : neighbors){
+		Board::Moves v_neighbor = _board[((it.first) * SIZE) + it.second];
 		// the position  is a limit/point/extremity of a sequence;
-		if (_board[((it.first) * SIZE) + it.second] == NONE)
+		if (v_neighbor == NONE)
 		{
-			auto s = select_sequence_by_position(sequences[it], position); 
-			if (s.second.length > 1)
-			{
-				// create new sequence with position as the begin.
-				auto temp = s.second;
-				temp.length = s.second.length-1;
-				sequences[position][s.first] = temp;
-				// change other side.
-				sequences[s.first][position] = temp;
-			}
-			// delete sequence both directions. Just do it if s.second.length == 1
-			sequences[s.first].erase(position);
-			sequences[position].erase(s.first);
-
+			aux_remove_move(sequences, it, position);
 		}
 		// not empty; maybe in the middle of a sequence (check opposite position by direction)
-		else if (_board[((it.first) * SIZE) + it.second] == player) // neighbor is a position where ther is a player' move
+		else if (v_neighbor == player) // neighbor is a position where there is a player' move
 		{
 			std::pair<std::pair<int,int>, Direction> opposite = get_opposite_position(it,position);
 			if (opposite.first.first >= 0 && opposite.first.second >= 0) // validating opposite
 			{
 				if (_board[((opposite.first.first) * SIZE) + opposite.first.second] == player)
-				{
+				{ // PROBLEMA: essa parte PODE ser executada duas vezes, gerando redundancia no BD. Devido duplicação das direções da BD.
 					// call recursive function to find the sequence's extremity; 
 					std::pair<int, int> begin = find_begin_sequence(sequences, opposite.first, opposite.second);
 					auto end_seq = select_sequence_by_position(sequences[begin], position); 
 					// than create two new sequences 
-///// essa parte pode ser executada duas vezes, gerando redundancia/problemas no BD
 					sequences[begin][position] = Sequence(calculate_lenght(begin,position,opposite.second), true,  opposite.second);
 					sequences[position][end_seq.first] = Sequence(calculate_lenght(position,end_seq.first,opposite.second),true, opposite.second);
 					// and delete the old ones;
 					sequences[begin].erase(end_seq.first);
 					sequences[end_seq.first].erase(begin);
-////		
 				}
-				else if (_board[((opposite.first.first) * SIZE) + opposite.first.second] != NONE) // adverser
-				{
-					// need to set true other_is_open some adverser's sequences
-					// create a new sequence' player with sequence reduced and delete the old one;
-					
-				}
-				//else (_board[((opposite.first) * SIZE) + opposite.second] == NONE) ignored, because it will already be taken care...
 			}
 			else // the opposite will not be used, because goes out of board...
 			{
-				// 
+				// create a new sequence' player with sequence reduced and delete the old one;
+				aux_remove_move(sequences, it, position);
 			}
 		}
-		// else // it is a position where there is a adverser's move // need to set true other_is_open some adverser's sequences
-		// ignored, because it will already be taken care...
+		else // it is a position where there is a adverser's move // need to set true other_is_open some adverser's sequences
+		{
+			if ( seq_advers.find(it) != seq_advers.end())
+			{
+				auto adver = select_sequence_by_position(seq_advers[position], it); 
+				seq_advers[adver.first][position].other_is_open = true;
+			}
+			else
+			{
+				// investigar sequencia para inclui-la novamente no BD do adversário;
+				
+			}
+		}
 	}
 	_board[((position.first) * SIZE) + position.second] = NONE;
 	_available_positions.insert(position);
+}
+
+void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int> it, std::pair<int, int> position)
+{
+	auto s = select_sequence_by_position(sequences[it], position); 
+	if (s.second.length > 1)
+	{
+		// create new sequence with position as the begin.
+		auto temp = s.second;
+		temp.length = s.second.length-1;
+		sequences[position][s.first] = temp;
+		// change other side.
+		sequences[s.first][position] = temp;
+	}
+	// delete sequence both directions. Just do it if s.second.length == 1
+	sequences[s.first].erase(position);
+	sequences[position].erase(s.first);
 }
 
 int Board::calculate_lenght(std::pair<int, int> begin, std::pair<int, int> end, Direction direction)
@@ -125,7 +136,7 @@ int Board::calculate_lenght(std::pair<int, int> begin, std::pair<int, int> end, 
 	return l;
 }
 
-std::pair<int, int> Board::find_begin_sequence(Sequences_map s, std::pair<int,int> p, Direction d)
+std::pair<int, int> Board::find_begin_sequence(Board::Sequences_map& s, std::pair<int,int> p, Direction d)
 {
 	if (d == VERTICAL)
 		p = std::make_pair(p.first-1, p.second);
