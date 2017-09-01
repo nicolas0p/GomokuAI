@@ -75,7 +75,7 @@ TEST(RemoveMoveFromBoard, OneMove_OneAdvers) {
 	board.insert_move({5,5}, Board::FIRSTPLAYER);
 	board.insert_move({4,4}, Board::SECONDPLAYER);
 	board.remove_move({5,5});
-	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
+	EXPECT_EQ(-8, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
 TEST(RemoveMoveFromBoard, OneMove_Extremity) {
@@ -85,12 +85,13 @@ TEST(RemoveMoveFromBoard, OneMove_Extremity) {
 	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
-TEST(RemoveMoveFromBoard, TwoMoves_Extremity) {
+TEST(RemoveMoveFromBoard, TwoMoves_OneAdvers) {
 	Board board(SIZE, SIZE);
-	board.insert_move({0,0}, Board::FIRSTPLAYER);
-	board.insert_move({1,0}, Board::FIRSTPLAYER);
-	board.remove_move({0,0});
-	EXPECT_EQ(8, sum_sequence_values(board, Board::FIRSTPLAYER));
+	board.insert_move({5,5}, Board::FIRSTPLAYER);
+	board.insert_move({5,4}, Board::SECONDPLAYER);
+	board.insert_move({5,3}, Board::FIRSTPLAYER);
+	board.remove_move({5,5});
+	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
 TEST(RemoveMoveFromBoard, TwoMoves_Extremity_OneAdvers) {
@@ -99,17 +100,15 @@ TEST(RemoveMoveFromBoard, TwoMoves_Extremity_OneAdvers) {
 	board.insert_move({1,0}, Board::FIRSTPLAYER);
 	board.insert_move({1,1}, Board::SECONDPLAYER);
 	board.remove_move({0,0});
-	EXPECT_EQ(8, sum_sequence_values(board, Board::FIRSTPLAYER));
+	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
-TEST(RemoveMoveFromBoard, TwoMoves_OneAdvers) {
+TEST(RemoveMoveFromBoard, TwoMoves_Extremity) {
 	Board board(SIZE, SIZE);
-	board.insert_move({5,5}, Board::FIRSTPLAYER);
-	board.insert_move({5,4}, Board::SECONDPLAYER);
-	board.insert_move({5,3}, Board::FIRSTPLAYER);
-	board.remove_move({5,5});
-	EXPECT_EQ(8, sum_sequence_values(board, Board::FIRSTPLAYER));
+	board.insert_move({0,0}, Board::FIRSTPLAYER);
+	board.insert_move({1,0}, Board::FIRSTPLAYER);
+	board.remove_move({0,0});
+	EXPECT_EQ(5, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
-
 
 

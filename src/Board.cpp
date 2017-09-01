@@ -77,7 +77,7 @@ void Board::remove_move_sequences(Board::Sequences_map& sequences, Board::Sequen
 					std::pair<int, int> begin = find_begin_sequence(sequences, opposite.first, opposite.second);
 					auto end_seq = select_sequence_by_position(begin, sequences[begin], position);
 					// than create two new sequences 
-					if (end_seq.first.first != -1)
+					if (end_seq.first.first != -5)
 					{
 					sequences[begin][position] = Sequence(calculate_lenght(begin,position,opposite.second), true,  opposite.second);
 					sequences[position][begin] = Sequence(calculate_lenght(begin,position,opposite.second), true,  opposite.second);
@@ -100,7 +100,7 @@ void Board::remove_move_sequences(Board::Sequences_map& sequences, Board::Sequen
 			if ( seq_advers.find(it) != seq_advers.end())
 			{
 				auto adver = select_sequence_by_position(position, seq_advers[position], it); 
-				if (adver.first.first == -1)
+				if (adver.first.first == -5)
 					throw "ERRO!!! Conjunto de Sequencias não contem a posição procurada!";
 				seq_advers[adver.first][position].other_is_open = true;
 			}
@@ -118,7 +118,7 @@ void Board::remove_move_sequences(Board::Sequences_map& sequences, Board::Sequen
 void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int> it, std::pair<int, int> position)
 {
 	auto s = select_sequence_by_position(it, sequences[it], position); 
-	if (s.first.first == -1)
+	if (s.first.first == -5)
 		throw "ERRO!!! Conjunto de Sequencias não contem a posição procurada!";
 
 	if (s.second.length > 1)
@@ -218,7 +218,7 @@ std::pair<std::pair<int, int>, Board::Sequence> Board::select_sequence_by_positi
 				|| (((begin.first > p.first) && p.first  > s.first.first) ))))
 			return s;
 	}
-	return {{-1,-1}, Sequence()};
+	return {{-5,-5}, Sequence()};
 	//throw "ERRO!!! Conjunto de Sequencias não contem a posição procurada!";
 }
 
