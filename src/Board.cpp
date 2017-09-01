@@ -277,6 +277,84 @@ std::set<std::pair<int, int>> Board::available_positions() const
 	return _available_positions;
 }
 
+void Board::remove_move_self_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
+{
+	for (Direction direction : {VERTICAL, HORIZONTAL, LEFT, RIGHT}) {
+		//discover the sequence I am a part of in this direction
+		auto edges = get_sequence_in_direction(sequences, move, direction);
+		//TODO finish. switch on the length of the sequence
+	}
+}
+
+std::pair<std::pair<int, int>, std::pair<int, int>> Board::get_sequence_in_direction(const Board::Sequences_map& sequences, const std::pair<int, int>& move, const Direction& direction)
+{
+	auto dir_max = direction_max(direction, move);
+	for(auto it = move; it <= dir_max; it = get_next_in_direction(it, direction)) {
+		for(auto other_end : sequences.at(it)) {
+			if(is_position_in_sequence(it, other_end.first, direction, move)) {
+				return {it, other_end.first};
+			}
+		}
+	}
+}
+
+std::pair<int, int> Board::get_next_in_direction(const std::pair<int, int>& position, const Direction& direction)
+{
+	switch(direction) {
+		case VERTICAL:
+			return {position.first + 1, position.second};
+		case HORIZONTAL:
+			return {position.first, position.second + 1};
+		case LEFT:
+			return {position.first + 1, position.second + 1};
+		case RIGHT:
+			return {position.first + 1, position.second - 1};
+	}
+	throw std::runtime_error("error 404: direction not found");
+}
+
+std::pair<int, int> Board::direction_max(const Direction& direction, const std::pair<int, int>& position)
+{
+	switch(direction) {
+		case VERTICAL:
+			return {SIZE - 1, position.second};
+		case HORIZONTAL:
+			return {position.first, SIZE - 1};
+		case LEFT:
+			if(position.first > position.second) {
+				return {SIZE - 1, (SIZE - position.first - 1) + position.second};
+			} else {
+				return {(SIZE - position.second - 1) + position.first, SIZE - 1};
+			}
+		case RIGHT:
+			if(position.first > position.second) {
+				return {SIZE - 1, position.second - (SIZE - position.first - 1)};
+			} else {
+				return {position.first - (SIZE - position.second - 1), SIZE - 1};
+			}
+	}
+	throw std::runtime_error("error 404: direction not found");
+}
+
+bool Board::is_position_in_sequence(const std::pair<int, int>& opening1, const std::pair<int, int>& opening2, const Direction& direction, const std::pair<int, int>& position)
+{
+	switch(direction) {
+		case VERTICAL:
+			return position.second == opening1.second && position.second == opening2.second &&
+					(( position.first < opening1.first && position.first > opening2.first ) || ( position.first < opening2.first && position.first > opening1.first ));
+		case HORIZONTAL:
+			return position.first == opening1.first && position.first == opening2.first &&
+					(( position.second < opening1.second && position.second > opening2.second ) || ( position.second < opening2.second && position.second > opening1.second ));
+		case LEFT:
+			return ( position.first < opening1.first && position.second < opening1.second && position.first > opening2.first && position.second > opening2.second ) ||
+					( position.first > opening1.first && position.second > opening1.second && position.first < opening2.first && position.second < opening2.second );
+		case RIGHT:
+			return ( position.first < opening1.first && position.second > opening1.second && position.first > opening2.first && position.second < opening2.second ) ||
+					( position.first > opening1.first && position.second < opening1.second && position.first < opening2.first && position.second > opening2.second );
+	}
+	throw std::runtime_error("error 404: direction not found");
+}
+
 /* Handles the sequences structures. This method should be called with the sequences of the player that is making the move now. It will increase the sequences where the move lands.
  **/
 void Board::insert_move_self_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)

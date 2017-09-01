@@ -92,6 +92,13 @@ class Board {
 		std::pair<int, int> find_begin_sequence(Sequences_map& s, std::pair<int,int> p, Direction d);
 		int calculate_lenght(std::pair<int, int> begin, std::pair<int, int> end, Direction d);
 		void aux_remove_move(Sequences_map& sequences, std::pair<int, int> it, std::pair<int, int> position);
+
+
+		void remove_move_self_sequences(Sequences_map& sequences, const std::pair<int, int>& move);
+		std::pair<std::pair<int, int>, std::pair<int, int>> get_sequence_in_direction(const Sequences_map& sequences, const std::pair<int, int>& move, const Direction& direction);
+		std::pair<int, int> get_next_in_direction(const std::pair<int, int>& position, const Direction& direction);
+		std::pair<int, int> direction_max(const Direction& direction, const std::pair<int, int>& position);
+		bool is_position_in_sequence(const std::pair<int, int>& opening1, const std::pair<int, int>& opening2, const Direction& direction, const std::pair<int, int>& position);
 };
 
 #endif /* BOARD_H */
