@@ -34,22 +34,21 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 	}
 }
 
-
 // position can't be empty
 void Board::remove_move(std::pair<int, int> position)
 {
 	auto player = _board[((position.first) * SIZE) + position.second];
 	if (player == FIRSTPLAYER){
 		remove_move_self_sequences(_sequences_first_player, position);
-		//remove_move_other_player_sequences(_sequences_second_player, position);
+		remove_move_other_player_sequences(_sequences_second_player, position);
 	}
 	else if (player == SECONDPLAYER){
 		remove_move_self_sequences(_sequences_second_player, position);
-		//remove_move_other_player_sequences(_sequences_first_player, position);
+		remove_move_other_player_sequences(_sequences_first_player, position);
 	}
 	else if (player == NONE) // check if position set a place on board that is empty
 		throw std::runtime_error("ERRO!!! Tentativa de apagar uma posição sem jogada!");
-
+	_board[((position.first) * SIZE) + position.second] = NONE;
 }
 
 void Board::remove_move_sequences(Board::Sequences_map& sequences, Board::Sequences_map& seq_advers, const std::pair<int, int>& position)
@@ -278,12 +277,66 @@ std::set<std::pair<int, int>> Board::available_positions() const
 	return _available_positions;
 }
 
+void Board::remove_move_other_player_sequences(Sequences_map& sequences, const std::pair<int, int>& move)
+{
+	static constexpr auto limit = std::pair<int, int>{-1,-1};
+	for (Direction direction : {VERTICAL, HORIZONTAL, LEFT, RIGHT}) {
+		auto other_edges = get_other_edges_sequence_in_direction(sequences, move, direction);
+		if(other_edges[0] != limit) {
+			for(auto edge : other_edges) {
+				sequences[edge][move].other_is_open = true;
+				unsigned short length = sequences[edge][move].length;
+				sequences[move][edge] = Sequence(length, true, direction);
+			}
+		} else { //TODO maybe will have to create sequence that does not have the other side open
+		}
+	}
+}
+
+std::vector<std::pair<int, int>> Board::get_other_edges_sequence_in_direction(const Board::Sequences_map& sequences, const std::pair<int, int>& position, const Direction &direction) const
+{
+	std::vector<std::pair<int, int>> results;
+	auto dir_max = direction_max(direction, position);
+	for(auto it = direction_min(direction, position); it <= dir_max; it = get_next_in_direction(it, direction)) {
+		if(sequences.find(it) != sequences.end() && sequences.at(it).find(position) != sequences.at(it).end()) {
+			results.push_back(it);
+		}
+	}
+	if(results.size() == 0) {
+		results.push_back({-1, -1});
+	}
+	return results;
+}
+
+std::pair<int, int> Board::direction_min(const Direction& direction, const std::pair<int, int>& position) const
+{
+	switch(direction) {
+		case VERTICAL:
+			return {0, position.second};
+		case HORIZONTAL:
+			return {position.first, 0};
+		case LEFT:
+			if(position.first > position.second) { //below main diagonal
+				return {(SIZE - 1) - position.second, 0};
+			} else {
+				return {0, (SIZE - 1) - position.first};
+			}
+		case RIGHT:
+			if(position.first + position.second < SIZE -1 ) { //above secondary diagonal
+				return {position.first + position.second, 0};
+			} else {
+				return {SIZE - 1, position.second - (SIZE - 1 - position.first)};
+			}
+	}
+	throw std::runtime_error("error 404: direction not found");
+}
+
 void Board::remove_move_self_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
 {
 	static constexpr auto limit = std::pair<int, int>{-1,-1};
 	for (Direction direction : {VERTICAL, HORIZONTAL, LEFT, RIGHT}) {
 		//discover the sequence I am a part of in this direction
-		auto edges = get_sequence_in_direction(sequences, move, direction);
+		auto edges = get_sequence_part_of_in_direction(sequences, move, direction);
 		if(edges.first == limit && edges.second == limit) {
 			continue;
 		}
@@ -375,7 +428,12 @@ bool Board::is_on_the_edge_of_sequence(const std::pair<int, int>& position, cons
 	return false;
 }
 
-std::pair<std::pair<int, int>, std::pair<int, int>> Board::get_sequence_in_direction(const Board::Sequences_map& sequences, const std::pair<int, int>& move, const Direction& direction) const
+/* Returns the edges of the sequence this positions belongs to in the given direction
+ * @param sequences the map containig the sequences from which the sequence will be taken
+ * @param move the position in the board that is a part of a sequence
+ * @param direction the direction in which the sequence must be in
+ * */
+std::pair<std::pair<int, int>, std::pair<int, int>> Board::get_sequence_part_of_in_direction(const Board::Sequences_map& sequences, const std::pair<int, int>& move, const Direction& direction) const
 {
 	auto dir_max = direction_max(direction, move);
 	for(auto it = move; it <= dir_max; it = get_next_in_direction(it, direction)) {

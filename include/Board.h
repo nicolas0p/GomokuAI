@@ -95,13 +95,16 @@ class Board {
 
 
 		void remove_move_self_sequences(Sequences_map& sequences, const std::pair<int, int>& move);
-		std::pair<std::pair<int, int>, std::pair<int, int>> get_sequence_in_direction(const Sequences_map& sequences, const std::pair<int, int>& move, const Direction& direction) const;
+		void remove_move_other_player_sequences(Sequences_map& sequences, const std::pair<int, int>& move);
+		std::pair<std::pair<int, int>, std::pair<int, int>> get_sequence_part_of_in_direction(const Sequences_map& sequences, const std::pair<int, int>& move, const Direction& direction) const;
 		std::pair<int, int> get_next_in_direction(const std::pair<int, int>& position, const Direction& direction) const;
 		std::pair<int, int> direction_max(const Direction& direction, const std::pair<int, int>& position) const;
 		bool is_position_in_sequence(const std::pair<int, int>& opening1, const std::pair<int, int>& opening2, const Direction& direction, const std::pair<int, int>& position) const;
 		std::pair<int, int> closest_opening(const std::pair<int, int>& position, const std::pair<int, int>& opening1, const std::pair<int, int>& opening2) const;
 		bool is_on_the_edge_of_sequence(const std::pair<int, int>& position, const std::pair<int, int>& opening1, const std::pair<int, int>& opening2) const;
 		unsigned short distance(const std::pair<int, int>& position1, const std::pair<int, int>& position2, const Direction& direction) const;
+		std::pair<int, int> direction_min(const Direction& direction, const std::pair<int, int>& position) const;
+		std::vector<std::pair<int, int>> get_other_edges_sequence_in_direction(const Sequences_map& sequences, const std::pair<int, int>& position, const Direction &direction) const;
 };
 
 #endif /* BOARD_H */
