@@ -21,7 +21,7 @@ int main()
 	unsigned int funcao = 1;
 	int difficulty = 2;
 	unsigned int temp = 0;
-	Board board(SIZE, SIZE);
+	Board board;
 
 	std::function<int (const Board &, const Board::Moves &)> heuristic = sum_sequence_values;
 	std::function<std::set<std::pair<int, int>> (const Board&)> move_generator = simple_move_generator;
@@ -80,6 +80,7 @@ int main()
 
 				// FIRST player starts				
 				Game game(board, std::move(first_player), std::move(second_player), std::make_unique<CommandLineInterface>()); 
+				
 				game.start_game();
 			}
 		}

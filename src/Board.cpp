@@ -88,6 +88,28 @@ void Board::remove_move_sequences(Board::Sequences_map& sequences, Board::Sequen
 					}
 				}
 			}
+			else if (opposite.first.first == -1 || opposite.first.second == -1)
+			{
+				std::pair<int, int> other_begin =other_find_begin_sequence(sequences, position, opposite.second);
+				/////////////////aux_remove_move(sequences, other_begin, position);
+				auto s = select_sequence_by_position(other_begin, sequences[other_begin], position); 
+				if (s.first.first == -5)
+					throw std::runtime_error("ERRO!!! Conjunto de Sequencias não contem a posição procurada!");
+
+				if (s.second.length > 1)
+				{
+					// create new sequence with position as the begin.
+					auto temp = s.second;
+					temp.length = s.second.length-1;
+					sequences[other_begin][position] = temp;
+					temp.other_is_open = true;
+					sequences[position][other_begin] = temp;
+				}
+				// Just do it if s.second.length == 1
+				sequences[other_begin].erase(s.first);
+				///////////
+
+			}
 			else // the opposite will not be used, because goes out of board...
 			{
 				// create a new sequence' player with sequence reduced and delete the old one;
@@ -96,9 +118,9 @@ void Board::remove_move_sequences(Board::Sequences_map& sequences, Board::Sequen
 		}
 		else // it is a position where there is a adverser's move // need to set true other_is_open some adverser's sequences
 		{
-			if ( seq_advers.find(it) != seq_advers.end())
+			if ( seq_advers.find(it) != seq_advers.end() && seq_advers.empty() == false)
 			{
-				auto adver = select_sequence_by_position(position, seq_advers[position], it); 
+				auto adver = select_sequence_by_position(it, seq_advers[it], position); 
 				if (adver.first.first == -5)
 					throw "ERRO!!! Conjunto de Sequencias não contem a posição procurada!";
 				seq_advers[adver.first][position].other_is_open = true;
@@ -112,6 +134,25 @@ void Board::remove_move_sequences(Board::Sequences_map& sequences, Board::Sequen
 	}
 	_board[((position.first) * SIZE) + position.second] = NONE;
 	_available_positions.insert(position);
+}
+
+std::pair<int, int> Board::other_find_begin_sequence(Board::Sequences_map& s, std::pair<int,int> p, Direction d)
+{
+	if (d == VERTICAL)
+		p = std::make_pair(p.first+1, p.second);
+	else if (d == HORIZONTAL)
+		p = std::make_pair(p.first, p.second+1);
+	else if (d == LEFT) /* \ */
+		p = std::make_pair(p.first+1, p.second+1);
+	else // if (d == RIGHT)/* / */
+		p = std::make_pair(p.first+1, p.second-1);
+
+	//std::unordered_map<std::string,double>::const_iterator got = s.find(p);
+	if ( s.find(p) != s.end() && s[p].empty() == false)  //if ( got != s.end() ) 
+		return p;
+
+	//"not found"
+	return other_find_begin_sequence(s, p, d);
 }
 
 void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int> it, std::pair<int, int> position)
