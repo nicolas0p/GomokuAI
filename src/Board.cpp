@@ -39,12 +39,13 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 void Board::remove_move(std::pair<int, int> position)
 {
 	auto player = _board[((position.first) * SIZE) + position.second];
-	
 	if (player == FIRSTPLAYER){
-		remove_move_sequences(_sequences_first_player, _sequences_second_player, position);
+		remove_move_self_sequences(_sequences_first_player, position);
+		//remove_move_other_player_sequences(_sequences_second_player, position);
 	}
 	else if (player == SECONDPLAYER){
-		remove_move_sequences(_sequences_second_player, _sequences_first_player, position);
+		remove_move_self_sequences(_sequences_second_player, position);
+		//remove_move_other_player_sequences(_sequences_first_player, position);
 	}
 	else if (player == NONE) // check if position set a place on board that is empty
 		throw std::runtime_error("ERRO!!! Tentativa de apagar uma posição sem jogada!");
@@ -279,14 +280,102 @@ std::set<std::pair<int, int>> Board::available_positions() const
 
 void Board::remove_move_self_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
 {
+	static constexpr auto limit = std::pair<int, int>{-1,-1};
 	for (Direction direction : {VERTICAL, HORIZONTAL, LEFT, RIGHT}) {
 		//discover the sequence I am a part of in this direction
 		auto edges = get_sequence_in_direction(sequences, move, direction);
-		//TODO finish. switch on the length of the sequence
+		if(edges.first == limit && edges.second == limit) {
+			continue;
+		}
+		unsigned short length = sequences[edges.first][edges.second].length;
+		if(length == 1) {
+			sequences[edges.first].erase(edges.second);
+			sequences[edges.second].erase(edges.first);
+		} else { //am I on the edge of a sequence or in its middle?
+			if(is_on_the_edge_of_sequence(move, edges.first, edges.second)) {
+				//reduce its length and update the nearest opening to 'move'
+				auto near_open = closest_opening(move, edges.first, edges.second);
+				auto far_open = (near_open == edges.second) ? edges.first : edges.second;
+				bool is_open = sequences[near_open][far_open].other_is_open;
+				sequences[edges.first].erase(edges.second);
+				sequences[edges.second].erase(edges.first);
+				sequences[far_open][move] = Sequence(length - 1, true, direction);
+				sequences[move][far_open] = Sequence(length - 1, is_open, direction);
+			} else {
+				//break the sequence in two, the new opening is 'move'
+				sequences[edges.first].erase(edges.second);
+				sequences[edges.second].erase(edges.first);
+				unsigned short length1, length2;
+				length1 = distance(edges.first, move, direction) - 1;
+				length2 = distance(edges.second, move, direction) - 1;
+				bool is_open1 = is_valid_position(edges.first) && get_value_position(edges.first) == NONE;
+				bool is_open2 = is_valid_position(edges.second) && get_value_position(edges.second) == NONE;
+				if(is_open1) {
+					sequences[edges.first][move] = Sequence(length1, true, direction);
+				}
+				if(is_open2) {
+					sequences[edges.second][move] = Sequence(length2, true, direction);
+				}
+				sequences[move][edges.first] = Sequence(length1, is_open1, direction);
+				sequences[move][edges.second] = Sequence(length2, is_open2, direction);
+			}
+		}
 	}
 }
 
-std::pair<std::pair<int, int>, std::pair<int, int>> Board::get_sequence_in_direction(const Board::Sequences_map& sequences, const std::pair<int, int>& move, const Direction& direction)
+/*Calculates the distance between two positions in the board in a given direction
+ * */
+unsigned short Board::distance(const std::pair<int, int>& position1, const std::pair<int, int>& position2, const Direction& direction) const
+{
+	if(direction == HORIZONTAL) {
+		return abs(position1.second - position2.second);
+	}
+	return abs(position1.first - position2.first);
+	/*switch(direction) {
+		case VERTICAL:
+			return abs(position1.first - position2.first);
+		case HORIZONTAL:
+			return abs(position1.second - position2.second);
+		case LEFT:
+			return abs(position1.first - position2.first);
+		case RIGHT:
+			return abs(position1.first - position2.first);
+	}
+	throw std::runtime_error("error 404: direction not found");*/
+}
+
+/*Returns the closest opening of a sequence to a position.
+ * Position MUST be in between openings AND distance 1 to one of them!
+ * @param position position on the board, must be in between the openings and distance 1 to one of them!
+ * @param opening1 one opening of a sequence
+ * @param opening2 another opening of that sequence
+ * @return std::pair<int, int> opening1 or opening2 depending on which one is the closest to position
+ * */
+std::pair<int, int> Board::closest_opening(const std::pair<int, int>& position, const std::pair<int, int>& opening1, const std::pair<int, int>& opening2) const
+{
+	if(abs(position.first - opening1.first) <= 1 && abs(position.second - opening1.second) <= 1) {
+		 return opening1;
+	}
+	return opening2;
+}
+
+/*Method used to discover if a position is on the edge of a sequence, that is, if it is 'beside' a opening
+ * @param position position from which it is wanted to know if it is on the edge of a sequence
+ * @param opening1 opening of a sequence
+ * @param opening2 another opening of the same sequence
+ * @ return if position is 'beside'(distance 1) one of the openings
+ * */
+bool Board::is_on_the_edge_of_sequence(const std::pair<int, int>& position, const std::pair<int, int>& opening1, const std::pair<int, int>& opening2) const
+{
+	for (auto open : {opening1, opening2}) {
+		if(abs(position.first - open.first) <= 1 && abs(position.second - open.second) <= 1) {
+			 return true;
+		}
+	}
+	return false;
+}
+
+std::pair<std::pair<int, int>, std::pair<int, int>> Board::get_sequence_in_direction(const Board::Sequences_map& sequences, const std::pair<int, int>& move, const Direction& direction) const
 {
 	auto dir_max = direction_max(direction, move);
 	for(auto it = move; it <= dir_max; it = get_next_in_direction(it, direction)) {
@@ -296,9 +385,10 @@ std::pair<std::pair<int, int>, std::pair<int, int>> Board::get_sequence_in_direc
 			}
 		}
 	}
+	return {{-1, -1}, {-1, -1}};
 }
 
-std::pair<int, int> Board::get_next_in_direction(const std::pair<int, int>& position, const Direction& direction)
+std::pair<int, int> Board::get_next_in_direction(const std::pair<int, int>& position, const Direction& direction) const
 {
 	switch(direction) {
 		case VERTICAL:
@@ -313,7 +403,7 @@ std::pair<int, int> Board::get_next_in_direction(const std::pair<int, int>& posi
 	throw std::runtime_error("error 404: direction not found");
 }
 
-std::pair<int, int> Board::direction_max(const Direction& direction, const std::pair<int, int>& position)
+std::pair<int, int> Board::direction_max(const Direction& direction, const std::pair<int, int>& position) const
 {
 	switch(direction) {
 		case VERTICAL:
@@ -327,16 +417,16 @@ std::pair<int, int> Board::direction_max(const Direction& direction, const std::
 				return {(SIZE - position.second - 1) + position.first, SIZE - 1};
 			}
 		case RIGHT:
-			if(position.first > position.second) {
-				return {SIZE - 1, position.second - (SIZE - position.first - 1)};
+			if(position.first + position.second < SIZE -1 ) { //above secondary diagonal
+				return {position.first + position.second, 0};
 			} else {
-				return {position.first - (SIZE - position.second - 1), SIZE - 1};
+				return {SIZE - 1, position.first + position.second - (SIZE - 1)};
 			}
 	}
 	throw std::runtime_error("error 404: direction not found");
 }
 
-bool Board::is_position_in_sequence(const std::pair<int, int>& opening1, const std::pair<int, int>& opening2, const Direction& direction, const std::pair<int, int>& position)
+bool Board::is_position_in_sequence(const std::pair<int, int>& opening1, const std::pair<int, int>& opening2, const Direction& direction, const std::pair<int, int>& position) const
 {
 	switch(direction) {
 		case VERTICAL:
