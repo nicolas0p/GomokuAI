@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <stdlib.h>
 
 #include "Board.h"
 #include "traits.h"
@@ -38,14 +39,21 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 void Board::remove_move(std::pair<int, int> position)
 {
 	auto player = _board[((position.first) * SIZE) + position.second];
-	auto sequences = _sequences_first_player; //first_player_sequences();
-	auto seq_advers = _sequences_second_player; // second_player_sequences();
-	if (player == SECONDPLAYER){
-		sequences = _sequences_second_player; //second_player_sequences();
-		seq_advers = _sequences_first_player; // second_player_sequences();
+	
+	if (player == FIRSTPLAYER){
+		remove_move_sequences(_sequences_first_player, _sequences_second_player, position);
+	}
+	else if (player == SECONDPLAYER){
+		remove_move_sequences(_sequences_second_player, _sequences_first_player, position);
 	}
 	else if (player == NONE) // check if position set a place on board that is empty
 		throw std::runtime_error("ERRO!!! Tentativa de apagar uma posição sem jogada!");
+
+}
+
+void Board::remove_move_sequences(Board::Sequences_map& sequences, Board::Sequences_map& seq_advers, const std::pair<int, int>& position)
+{
+	auto player = _board[((position.first) * SIZE) + position.second];
 
 	// get the positions around the position
 	std::set<std::pair<int, int>> neighbors = get_neighbors(position);
@@ -66,13 +74,18 @@ void Board::remove_move(std::pair<int, int> position)
 				{ // PROBLEMA: essa parte PODE ser executada duas vezes, gerando redundancia no BD. Devido duplicação das direções da BD.
 					// call recursive function to find the sequence's extremity; 
 					std::pair<int, int> begin = find_begin_sequence(sequences, opposite.first, opposite.second);
-					auto end_seq = select_sequence_by_position(sequences[begin], position); 
+					auto end_seq = select_sequence_by_position(begin, sequences[begin], position);
 					// than create two new sequences 
+					if (end_seq.first.first != -1)
+					{
 					sequences[begin][position] = Sequence(calculate_lenght(begin,position,opposite.second), true,  opposite.second);
+					sequences[position][begin] = Sequence(calculate_lenght(begin,position,opposite.second), true,  opposite.second);
 					sequences[position][end_seq.first] = Sequence(calculate_lenght(position,end_seq.first,opposite.second),true, opposite.second);
+					sequences[end_seq.first][position] = Sequence(calculate_lenght(position,end_seq.first,opposite.second),true, opposite.second);
 					// and delete the old ones;
 					sequences[begin].erase(end_seq.first);
 					sequences[end_seq.first].erase(begin);
+					}
 				}
 			}
 			else // the opposite will not be used, because goes out of board...
@@ -85,7 +98,9 @@ void Board::remove_move(std::pair<int, int> position)
 		{
 			if ( seq_advers.find(it) != seq_advers.end())
 			{
-				auto adver = select_sequence_by_position(seq_advers[position], it); 
+				auto adver = select_sequence_by_position(position, seq_advers[position], it); 
+				if (adver.first.first == -1)
+					throw std::runtime_error("ERRO!!! Conjunto de Sequencias não contem a posição procurada!");
 				seq_advers[adver.first][position].other_is_open = true;
 			}
 			else
@@ -99,9 +114,12 @@ void Board::remove_move(std::pair<int, int> position)
 	_available_positions.insert(position);
 }
 
-void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int>& it, std::pair<int, int>& position)
+void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int> it, std::pair<int, int> position)
 {
-	auto s = select_sequence_by_position(sequences[it], position); 
+	auto s = select_sequence_by_position(it, sequences[it], position); 
+	if (s.first.first == -1)
+		throw std::runtime_error("ERRO!!! Conjunto de Sequencias não contem a posição procurada!");
+
 	if (s.second.length > 1)
 	{
 		// create new sequence with position as the begin.
@@ -118,20 +136,23 @@ void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int>
 
 int Board::calculate_lenght(std::pair<int, int> begin, std::pair<int, int> end, Direction direction)
 {
-	int l;
+	int l = -1;
 	switch(direction) {
 		case VERTICAL:
-			l = (begin.first - end.first - 1);
+			l = abs(begin.first - end.first) - 1;
+			break;
 		case HORIZONTAL:
-			l = (begin.second - end.second - 1);
+			l = abs(begin.second - end.second) - 1;
+			break;
 		case LEFT:
-			l = (begin.second - end.second - 1);
+			l = abs(begin.second - end.second) - 1;
+			break;
 		case RIGHT:
-			l = (begin.first - end.first - 1);
+			l = abs(begin.first - end.first) - 1;
 	}
 	
 	if (l<0)
-		throw ("Error! lenght less than 0.");
+		throw std::runtime_error("Error! lenght less than 0.");
 
 	return l;
 }
@@ -148,14 +169,14 @@ std::pair<int, int> Board::find_begin_sequence(Board::Sequences_map& s, std::pai
 		p = std::make_pair(p.first-1, p.second+1);
 
 	//std::unordered_map<std::string,double>::const_iterator got = s.find(p);
-	if ( s.find(p) != s.end() )  //if ( got != s.end() ) 
+	if ( s.find(p) != s.end() && s[p].empty() == false)  //if ( got != s.end() ) 
 		return p;
 
 	//"not found"
 	return find_begin_sequence(s, p, d);
 }
 
-std::pair<std::pair<int,int>, Direction> Board::get_opposite_position(std::pair<int,int>& neighbor, std::pair<int,int>& position)
+std::pair<std::pair<int,int>, Direction> Board::get_opposite_position(std::pair<int,int> neighbor, std::pair<int,int> position)
 {
 	if ((neighbor.first == position.first) && (neighbor.second > position.second) ) // HORIZONTAL -->
 		return std::make_pair(std::make_pair(position.first,position.second-1), HORIZONTAL);
@@ -181,19 +202,23 @@ std::pair<std::pair<int,int>, Direction> Board::get_opposite_position(std::pair<
 // p = posição de uma EXTREMIDADE de uma sequencia
 // objetivo: retornar a sequencia de seq que contem p
 std::pair<std::pair<int, int>, Board::Sequence> Board::select_sequence_by_position(
+			std::pair<int, int> begin,
 			std::unordered_map<std::pair<int, int>, Board::Sequence, pairhash> seq,
 		    std::pair<int, int> p)
 {
 	for (auto s : seq)
 	{
-		if ((s.second.direction == HORIZONTAL || s.second.direction == LEFT) && /* \ */
-			(s.first.second == (p.second + s.second.length) || s.first.second == (p.second - s.second.length)))
+		if (((s.second.direction == HORIZONTAL || (s.second.direction == LEFT)) )
+			&& (((begin.second < p.second) && (p.second < s.first.second)
+					|| ((begin.second > p.second && ( p.second > s.first.second))))))
 			return s;
-		else if ((s.second.direction == VERTICAL || s.second.direction == RIGHT) && 	/* / */
-				 (s.first.first == (p.first + s.second.length) ||  s.first.first == (p.first - s.second.length)))
+		else if (((s.second.direction == VERTICAL || ( s.second.direction == RIGHT)))
+			&& (((begin.first < p.first) && (p.first < s.first.first )
+				|| (((begin.first > p.first) && p.first  > s.first.first) ))))
 			return s;
 	}
-	throw std::runtime_error("ERRO!!! Conjunto de Sequencias não contem a posição procurada!");
+	//throw std::runtime_error("ERRO!!! Conjunto de Sequencias não contem a posição procurada!");
+	return {{-1,-1}, Sequence()};
 }
 
 std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
