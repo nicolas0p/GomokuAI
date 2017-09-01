@@ -107,7 +107,7 @@ void Board::remove_move_sequences(Board::Sequences_map& sequences, Board::Sequen
 	_available_positions.insert(position);
 }
 
-void Board::aux_remove_move(Board::Sequences_map sequences, std::pair<int, int> it, std::pair<int, int> position)
+void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int> it, std::pair<int, int> position)
 {
 	auto s = select_sequence_by_position(sequences[it], position); 
 	if (s.second.length > 1)
