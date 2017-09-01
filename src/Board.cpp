@@ -39,14 +39,21 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 void Board::remove_move(std::pair<int, int> position)
 {
 	auto player = _board[((position.first) * SIZE) + position.second];
-	auto sequences = _sequences_first_player; //first_player_sequences();
-	auto seq_advers = _sequences_second_player; // second_player_sequences();
-	if (player == SECONDPLAYER){
-		sequences = _sequences_second_player; //second_player_sequences();
-		seq_advers = _sequences_first_player; // second_player_sequences();
+	
+	if (player == FIRSTPLAYER){
+		remove_move_sequences(_sequences_first_player, _sequences_second_player, position);
+	}
+	else if (player == SECONDPLAYER){
+		remove_move_sequences(_sequences_second_player, _sequences_first_player, position);
 	}
 	else if (player == NONE) // check if position set a place on board that is empty
 		std::cout << "ERRO!!! Tentativa de apagar uma posição sem jogada!" << std::endl;
+
+}
+
+void Board::remove_move_sequences(Board::Sequences_map& sequences, Board::Sequences_map& seq_advers, const std::pair<int, int>& position)
+{
+	auto player = _board[((position.first) * SIZE) + position.second];
 
 	// get the positions around the position
 	std::set<std::pair<int, int>> neighbors = get_neighbors(position);
@@ -100,7 +107,7 @@ void Board::remove_move(std::pair<int, int> position)
 	_available_positions.insert(position);
 }
 
-void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int>& it, std::pair<int, int>& position)
+void Board::aux_remove_move(Board::Sequences_map sequences, std::pair<int, int> it, std::pair<int, int> position)
 {
 	auto s = select_sequence_by_position(sequences[it], position); 
 	if (s.second.length > 1)
@@ -156,7 +163,7 @@ std::pair<int, int> Board::find_begin_sequence(Board::Sequences_map& s, std::pai
 	return find_begin_sequence(s, p, d);
 }
 
-std::pair<std::pair<int,int>, Direction> Board::get_opposite_position(std::pair<int,int>& neighbor, std::pair<int,int>& position)
+std::pair<std::pair<int,int>, Direction> Board::get_opposite_position(std::pair<int,int> neighbor, std::pair<int,int> position)
 {
 	if ((neighbor.first == position.first) && (neighbor.second > position.second) ) // HORIZONTAL -->
 		return std::make_pair(std::make_pair(position.first,position.second-1), HORIZONTAL);
