@@ -5,10 +5,10 @@
 #include "Board.h"
 #include "traits.h"
 
-Board::Board(unsigned int size_x, unsigned int size_y) : _board(size_x * size_y, NONE),	_winner(NONE)
+Board::Board() : _board(SIZE * SIZE, NONE),	_winner(NONE)
 {
-	for(unsigned int i = 0; i < size_x; ++i) {
-		for(unsigned int j = 0; j < size_y; ++j) {
+	for(unsigned int i = 0; i < SIZE; ++i) {
+		for(unsigned int j = 0; j < SIZE; ++j) {
 			_available_positions.insert(std::pair<int, int>{i, j});
 		}
 	}

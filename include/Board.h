@@ -30,7 +30,7 @@ class Board {
 			SECONDPLAYER = 2
 		};
 
-		Board(unsigned int size_x, unsigned int size_y);
+		Board();
 		~Board() {}
 		//Contains a sequence length and other opening
 		//other_is_open contains if the other opening is open
