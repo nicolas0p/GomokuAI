@@ -1,5 +1,6 @@
 
 #include <set>
+#include <limits>
 
 #include "Minimax.h"
 
@@ -10,16 +11,24 @@ Minimax::Minimax(const std::function<int (const Board &, const Board::Moves &)>&
 	_difficulty(difficulty)
 {}
 
+/*
+ * */
 std::pair<int, int> Minimax::get_move(Board board)
 {
 	return std::get<0>(mmax(&board, _difficulty));
 }
 
-std::tuple<std::pair<int, int>, int> Minimax::mmax(Board * board, unsigned int depth)
+/* Max step of the minimax algorithm. It selects the maximum node of its children and chooses it
+ * @param board the board from which it is desired to generate moves of this subtree
+ * @param depth the depth that the algorithm should go
+ * @returns a tuple containing the chosen move of this subtree, the value this move produces in the board, calculated by the heuristic, and its pruning alpha
+ * */
+std::tuple<std::pair<int, int>, int, int> Minimax::mmax(Board * board, unsigned int depth)
 {
 	//set of moves
 	auto moves = _generate_moves(*board);
-	std::tuple<std::pair<int, int>, int> choice;
+	std::tuple<std::pair<int, int>, int, int> choice;
+	int alpha = std::numeric_limits<int>::min();
 	//bottom of tree
 	if (depth <= 1) {
 		std::get<0>(choice) = *moves.begin();
@@ -55,11 +64,16 @@ std::tuple<std::pair<int, int>, int> Minimax::mmax(Board * board, unsigned int d
 	return choice;
 }
 
-std::tuple<std::pair<int, int>, int> Minimax::mmin(Board * board, unsigned int depth)
+/* Min step of the minimax algorithm. It selects the minimum node of its children and chooses it
+ * @param board the board from which it is desired to generate moves of this subtree
+ * @param depth the depth that the algorithm should go
+ * @returns a tuple containing the chosen move of this subtree, the value this move produces in the board, calculated by the heuristic, and its pruning beta
+ * */
+std::tuple<std::pair<int, int>, int, int> Minimax::mmin(Board * board, unsigned int depth)
 {
 	//set of moves
 	std::set<std::pair<int, int>> moves = _generate_moves(*board);
-	std::tuple<std::pair<int, int>, int> choice;
+	std::tuple<std::pair<int, int>, int, int> choice;
 	//bottom of tree
 	if (depth <= 1) {
 		std::get<0>(choice) = *moves.begin();
