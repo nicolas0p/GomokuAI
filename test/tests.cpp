@@ -85,3 +85,15 @@ TEST(Minimax, Depth1OnePlayer) {
 	EXPECT_EQ(300*2 + 6*2, sum_sequence_values(board, Board::FIRSTPLAYER));
 
 }
+
+TEST(RemoveMoveFromBoard, TwoMove) {
+	Board board(SIZE, SIZE);
+	board.insert_move({5,5}, Board::FIRSTPLAYER);
+	board.insert_move({5,6}, Board::FIRSTPLAYER);
+	board.remove_move({5,5});
+	EXPECT_EQ(8, sum_sequence_values(board, Board::FIRSTPLAYER));
+}
+
+
+
+

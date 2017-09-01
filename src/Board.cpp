@@ -33,75 +33,146 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 	}
 }
 
+
 // position can't be empty
 void Board::remove_move(std::pair<int, int> position)
 {
 	auto player = _board[((position.first) * SIZE) + position.second];
-	auto sequences = first_player_sequences();
-	if (player == SECONDPLAYER)
-		sequences = second_player_sequences();
+	auto sequences = _sequences_first_player; //first_player_sequences();
+	auto seq_advers = _sequences_second_player; // second_player_sequences();
+	if (player == SECONDPLAYER){
+		sequences = _sequences_second_player; //second_player_sequences();
+		seq_advers = _sequences_first_player; // second_player_sequences();
+	}
 	else if (player == NONE) // check if position set a place on board that is empty
 		throw std::runtime_error("ERRO!!! Tentativa de apagar uma posição sem jogada!");
 
 	// get the positions around the position
 	std::set<std::pair<int, int>> neighbors = get_neighbors(position);
 	for(auto it : neighbors){
+		Board::Moves v_neighbor = _board[((it.first) * SIZE) + it.second];
 		// the position  is a limit/point/extremity of a sequence;
-		if (_board[((it.first) * SIZE) + it.second] == NONE)
+		if (v_neighbor == NONE)
 		{
-			auto s = select_sequence_by_position(sequences[it], position); // selecionar a SEQUENCIA QUE CONTEM A POSITION!!!!
-			if (s.second.length > 1)
-			{
-				// create new sequence with position as the begin.
-				auto temp = s.second;
-				temp.length = s.second.length-1;
-				sequences[position][s.first] = temp;
-				// change other side.
-				sequences[s.first][position] = temp;
-
-				/*sequences.insert(std::make_pair<
-				std::pair<int, int>, std::unordered_map<std::pair<int, int>, Board::Sequence, pairhash>, pairhash
-					>(s.first, temp));*/
-			}
-			// delete sequence both directions. Just do it if s.second.length == 1
-			sequences[s.first].erase(position);
-			sequences[position].erase(s.first);
-
+			aux_remove_move(sequences, it, position);
 		}
 		// not empty; maybe in the middle of a sequence (check opposite position by direction)
-		else if (_board[((it.first) * SIZE) + it.second] == player) // peça vizinha é do mesmo jogador
+		else if (v_neighbor == player) // neighbor is a position where there is a player' move
 		{
-			// AKI!!!
-			// PEÇAS OPOSITORAS SERÃO UTEIS? CUIDAR COM AS BORDAS..
-			get_opposite_position(it,position);
+			std::pair<std::pair<int,int>, Direction> opposite = get_opposite_position(it,position);
+			if (opposite.first.first >= 0 && opposite.first.second >= 0) // validating opposite
+			{
+				if (_board[((opposite.first.first) * SIZE) + opposite.first.second] == player)
+				{ // PROBLEMA: essa parte PODE ser executada duas vezes, gerando redundancia no BD. Devido duplicação das direções da BD.
+					// call recursive function to find the sequence's extremity; 
+					std::pair<int, int> begin = find_begin_sequence(sequences, opposite.first, opposite.second);
+					auto end_seq = select_sequence_by_position(sequences[begin], position); 
+					// than create two new sequences 
+					sequences[begin][position] = Sequence(calculate_lenght(begin,position,opposite.second), true,  opposite.second);
+					sequences[position][end_seq.first] = Sequence(calculate_lenght(position,end_seq.first,opposite.second),true, opposite.second);
+					// and delete the old ones;
+					sequences[begin].erase(end_seq.first);
+					sequences[end_seq.first].erase(begin);
+				}
+			}
+			else // the opposite will not be used, because goes out of board...
+			{
+				// create a new sequence' player with sequence reduced and delete the old one;
+				aux_remove_move(sequences, it, position);
+			}
 		}
-		else // peça vizinha é do jogador adversário
+		else // it is a position where there is a adverser's move // need to set true other_is_open some adverser's sequences
 		{
-			// set true other_is_open some adverser's sequences
+			if ( seq_advers.find(it) != seq_advers.end())
+			{
+				auto adver = select_sequence_by_position(seq_advers[position], it); 
+				seq_advers[adver.first][position].other_is_open = true;
+			}
+			else
+			{
+				// investigar sequencia para inclui-la novamente no BD do adversário;
+				
+			}
 		}
 	}
 	_board[((position.first) * SIZE) + position.second] = NONE;
 	_available_positions.insert(position);
 }
 
-std::pair<int,int> Board::get_opposite_position(std::pair<int,int> neighbor, std::pair<int,int> position)
+void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int>& it, std::pair<int, int>& position)
+{
+	auto s = select_sequence_by_position(sequences[it], position); 
+	if (s.second.length > 1)
+	{
+		// create new sequence with position as the begin.
+		auto temp = s.second;
+		temp.length = s.second.length-1;
+		sequences[position][s.first] = temp;
+		// change other side.
+		sequences[s.first][position] = temp;
+		sequences[s.first].erase(it);
+	}
+	// Just do it if s.second.length == 1
+	sequences[it].erase(s.first);
+}
+
+int Board::calculate_lenght(std::pair<int, int> begin, std::pair<int, int> end, Direction direction)
+{
+	int l;
+	switch(direction) {
+		case VERTICAL:
+			l = (begin.first - end.first - 1);
+		case HORIZONTAL:
+			l = (begin.second - end.second - 1);
+		case LEFT:
+			l = (begin.second - end.second - 1);
+		case RIGHT:
+			l = (begin.first - end.first - 1);
+	}
+	
+	if (l<0)
+		throw ("Error! lenght less than 0.");
+
+	return l;
+}
+
+std::pair<int, int> Board::find_begin_sequence(Board::Sequences_map& s, std::pair<int,int> p, Direction d)
+{
+	if (d == VERTICAL)
+		p = std::make_pair(p.first-1, p.second);
+	else if (d == HORIZONTAL)
+		p = std::make_pair(p.first, p.second-1);
+	else if (d == LEFT) /* \ */
+		p = std::make_pair(p.first-1, p.second-1);
+	else // if (d == RIGHT)/* / */
+		p = std::make_pair(p.first-1, p.second+1);
+
+	//std::unordered_map<std::string,double>::const_iterator got = s.find(p);
+	if ( s.find(p) != s.end() )  //if ( got != s.end() ) 
+		return p;
+
+	//"not found"
+	return find_begin_sequence(s, p, d);
+}
+
+std::pair<std::pair<int,int>, Direction> Board::get_opposite_position(std::pair<int,int>& neighbor, std::pair<int,int>& position)
 {
 	if ((neighbor.first == position.first) && (neighbor.second > position.second) ) // HORIZONTAL -->
-		return std::make_pair(position.first,position.second-1);
+		return std::make_pair(std::make_pair(position.first,position.second-1), HORIZONTAL);
 	else if ((neighbor.first == position.first) && (neighbor.second < position.second) ) // HORIZONTAL <--
-		return std::make_pair(position.first,position.second+1);
+		return std::make_pair(std::make_pair(position.first,position.second+1), HORIZONTAL);
 	else if ((neighbor.first < position.first) && (neighbor.second < position.second) ) // \ down
-		return std::make_pair(position.first+1,position.second+1);
+		return std::make_pair(std::make_pair(position.first+1,position.second+1), LEFT);
 	else if ((neighbor.first > position.first) && (neighbor.second > position.second) ) // \ up
-		return std::make_pair(position.first-1,position.second-1);
+		return std::make_pair(std::make_pair(position.first-1,position.second-1), LEFT);
 	else if ((neighbor.first > position.first) && (neighbor.second == position.second) ) // VERTICAL ^
-		return std::make_pair(position.first-1,position.second);
+		return std::make_pair(std::make_pair(position.first-1,position.second), VERTICAL);
 	else if ((neighbor.first < position.first) && (neighbor.second == position.second) ) // VERTICAL v
-		return std::make_pair(position.first+1,position.second);
+		return std::make_pair(std::make_pair(position.first+1,position.second), VERTICAL);
 	else if ((neighbor.first < position.first) && (neighbor.second > position.second) ) // / down
-		return std::make_pair(position.first+1,position.second-1);
+		return std::make_pair(std::make_pair(position.first+1,position.second-1), RIGHT);
 	else if ((neighbor.first > position.first) && (neighbor.second < position.second) ) // / up
-		return std::make_pair(position.first-1,position.second+1);
+		return std::make_pair(std::make_pair(position.first-1,position.second+1), RIGHT);
 	throw std::runtime_error("error 404: opposite position not found");
 }
 
