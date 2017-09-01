@@ -1,20 +1,19 @@
 
 #include <iostream>
-#include <stdlib.h> 
+#include <stdexcept>
+#include <stdlib.h>
 
 #include "Board.h"
 #include "traits.h"
 
-Board::Board(unsigned int size_x, unsigned int size_y) : _board(size_x * size_y, NONE)
+Board::Board() : _board(SIZE * SIZE, NONE),	_winner(NONE)
 {
-	for(unsigned int i = 0; i < size_x; ++i) {
-		for(unsigned int j = 0; j < size_y; ++j) {
+	for(unsigned int i = 0; i < SIZE; ++i) {
+		for(unsigned int j = 0; j < SIZE; ++j) {
 			_available_positions.insert(std::pair<int, int>{i, j});
 		}
 	}
 }
-
-Board::~Board() {}
 
 // position need to be empty
 void Board::insert_move(std::pair<int, int> position, Moves player)
@@ -28,10 +27,10 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 	_available_positions.erase(position);
 	if(player == Board::FIRSTPLAYER) {
 		insert_move_self_sequences(_sequences_first_player, position);
-		insert_move_other_people_sequences(_sequences_second_player, position);
+		insert_move_other_player_sequences(_sequences_second_player, position);
 	} else {
 		insert_move_self_sequences(_sequences_second_player, position);
-		insert_move_other_people_sequences(_sequences_first_player, position);
+		insert_move_other_player_sequences(_sequences_first_player, position);
 	}
 }
 
@@ -48,7 +47,7 @@ void Board::remove_move(std::pair<int, int> position)
 		remove_move_sequences(_sequences_second_player, _sequences_first_player, position);
 	}
 	else if (player == NONE) // check if position set a place on board that is empty
-		std::cout << "ERRO!!! Tentativa de apagar uma posição sem jogada!" << std::endl;
+		throw std::runtime_error("ERRO!!! Tentativa de apagar uma posição sem jogada!");
 
 }
 
@@ -119,7 +118,7 @@ void Board::aux_remove_move(Board::Sequences_map& sequences, std::pair<int, int>
 {
 	auto s = select_sequence_by_position(it, sequences[it], position); 
 	if (s.first.first == -5)
-		throw "ERRO!!! Conjunto de Sequencias não contem a posição procurada!";
+		throw std::runtime_error("ERRO!!! Conjunto de Sequencias não contem a posição procurada!");
 
 	if (s.second.length > 1)
 	{
@@ -153,7 +152,7 @@ int Board::calculate_lenght(std::pair<int, int> begin, std::pair<int, int> end, 
 	}
 	
 	if (l<0)
-		throw ("Error! lenght less than 0.");
+		throw std::runtime_error("Error! lenght less than 0.");
 
 	return l;
 }
@@ -195,7 +194,7 @@ std::pair<std::pair<int,int>, Direction> Board::get_opposite_position(std::pair<
 		return std::make_pair(std::make_pair(position.first+1,position.second-1), RIGHT);
 	else if ((neighbor.first > position.first) && (neighbor.second < position.second) ) // / up
 		return std::make_pair(std::make_pair(position.first-1,position.second+1), RIGHT);
-	throw "error 404: opposite position not found";
+	throw std::runtime_error("error 404: opposite position not found");
 }
 
 // auxilia remove_move
@@ -219,7 +218,7 @@ std::pair<std::pair<int, int>, Board::Sequence> Board::select_sequence_by_positi
 			return s;
 	}
 	return {{-5,-5}, Sequence()};
-	//throw "ERRO!!! Conjunto de Sequencias não contem a posição procurada!";
+	//throw std::runtime_error("ERRO!!! Conjunto de Sequencias não contem a posição procurada!");
 }
 
 std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
@@ -265,7 +264,7 @@ std::set<std::pair<int, int>> Board::get_neighbors(std::pair<int, int> p)
 		return {std::make_pair(14,13), std::make_pair(13,13), std::make_pair(13,14)};
 	else if (p.first == 14 && p.second == 0)
 		return {std::make_pair(13,0), std::make_pair(13,1), std::make_pair(14,1)};
-	throw "Error 404: neighbor not found";
+	throw std::runtime_error("Error 404: neighbor not found");
 }
 
 Board::Moves Board::get_value_position(std::pair<int, int> position) const
@@ -352,15 +351,15 @@ void Board::insert_move_self_sequences(Board::Sequences_map& sequences, const st
 			auto a = generate_sequence_len1(move, dir);
 			edge1 = a.first;
 			edge2 = a.second;
-			bool is_open = is_valid_position(edge2) && get_value_position(edge2) == NONE;
-			if(is_valid_position(edge1)) {
+			bool is_open2 = is_valid_position(edge2) && get_value_position(edge2) == NONE;
+			bool is_open1 = is_valid_position(edge1) && get_value_position(edge1) == NONE;
+			if(is_open1) {
 				//sequences[edge1].insert(Sequence(1, edge2, is_open, dir));
-				sequences[edge1][edge2] = Sequence(1, is_open, dir);
+				sequences[edge1][edge2] = Sequence(1, is_open2, dir);
 			}
-			is_open = is_valid_position(edge1) && get_value_position(edge1) == NONE;
-			if(is_valid_position(edge2)) {
+			if(is_open2) {
 				//sequences[edge2].insert(Sequence(1, edge1, is_open, dir));
-				sequences[edge2][edge1] = Sequence(1, is_open, dir);
+				sequences[edge2][edge1] = Sequence(1, is_open1, dir);
 			}
 			dir = next_direction(dir);
 		}
@@ -371,7 +370,7 @@ void Board::insert_move_self_sequences(Board::Sequences_map& sequences, const st
  * center the center position for the sequence
  * direction the direction of the sequence
  * */
-std::pair<std::pair<int, int>, std::pair<int, int>> Board::generate_sequence_len1(const std::pair<int, int>& center, const Direction& direction)
+std::pair<std::pair<int, int>, std::pair<int, int>> Board::generate_sequence_len1(const std::pair<int, int>& center, const Direction& direction) const
 {
 	std::pair<int, int> edge1, edge2;
 	switch(direction) {
@@ -395,7 +394,7 @@ std::pair<std::pair<int, int>, std::pair<int, int>> Board::generate_sequence_len
 	return {edge1, edge2};
 }
 
-bool Board::is_valid_position(const std::pair<int, int> position)
+bool Board::is_valid_position(const std::pair<int, int> position) const
 {
 	return !(position.first < 0 || position.second < 0 || position.first >= SIZE || position.second >= SIZE );
 }
@@ -408,7 +407,7 @@ Direction next_direction(const Direction& direction)
 
 /* Handles the sequences structures. This method should be called with the sequences of the player that is NOT making the move now. It will remove the openings of the sequences where the move lands.
  **/
-void Board::insert_move_other_people_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
+void Board::insert_move_other_player_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
 {
 	auto to_decrease = sequences[move]; //contains the sequences that will be decreased
 	for(auto other : to_decrease)
@@ -426,7 +425,7 @@ void Board::insert_move_other_people_sequences(Board::Sequences_map& sequences, 
 	sequences.erase(move);
 }
 
-std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move)
+std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move) const
 {
 	switch(sequence.direction) {
 		case VERTICAL:
@@ -450,7 +449,7 @@ std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pai
 			}
 			return {move.first - 1, move.second + 1}; //to the right and above
 		default:
-			throw "error 404: direction not found";
+			throw std::runtime_error("error 404: direction not found");
 	}
 }
 
@@ -462,4 +461,9 @@ Board::Sequences_map Board::first_player_sequences() const
 Board::Sequences_map Board::second_player_sequences() const
 {
 	return _sequences_second_player;
+}
+
+Board::Moves Board::winner() const
+{
+	return _winner;
 }

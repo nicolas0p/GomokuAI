@@ -14,7 +14,7 @@ Player::~Player() {}
 
 std::pair<int, int> Player::make_move()
 {
-	return _input_component->get_move(_board, _player);
+	return _input_component->get_move(_board);
 }
 
 void Player::add_points(int p)

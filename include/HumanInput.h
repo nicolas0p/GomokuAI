@@ -8,9 +8,9 @@
 
 class HumanInput : public InputComponent {
 	public:
-		HumanInput();
+		HumanInput(const Board::Moves& player);
 		~HumanInput();
-		std::pair<int, int> get_move(Board board, Board::Moves player);
+		std::pair<int, int> get_move(Board board);
 
 	private:
 		int _line,_col;
