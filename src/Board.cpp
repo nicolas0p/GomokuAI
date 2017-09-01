@@ -156,7 +156,7 @@ std::pair<int, int> Board::find_begin_sequence(Board::Sequences_map& s, std::pai
 	return find_begin_sequence(s, p, d);
 }
 
-std::pair<std::pair<int,int>, Direction> Board::get_opposite_position(std::pair<int,int> neighbor, std::pair<int,int> position)
+std::pair<std::pair<int,int>, Direction> Board::get_opposite_position(std::pair<int,int>& neighbor, std::pair<int,int>& position)
 {
 	if ((neighbor.first == position.first) && (neighbor.second > position.second) ) // HORIZONTAL -->
 		return std::make_pair(std::make_pair(position.first,position.second-1), HORIZONTAL);

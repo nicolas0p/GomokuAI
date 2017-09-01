@@ -52,3 +52,15 @@ TEST(RemoveMoveFromBoard, OneMove) {
 	board.remove_move({5,5});
 	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
+
+TEST(RemoveMoveFromBoard, TwoMove) {
+	Board board(SIZE, SIZE);
+	board.insert_move({5,5}, Board::FIRSTPLAYER);
+	board.insert_move({5,6}, Board::FIRSTPLAYER);
+	board.remove_move({5,5});
+	EXPECT_EQ(8, sum_sequence_values(board, Board::FIRSTPLAYER));
+}
+
+
+
+
