@@ -521,9 +521,9 @@ std::pair<int, int> direction_min(const Direction& direction, const std::pair<in
 			return {position.first, -1};
 		case LEFT: //top left
 			if(position.first > position.second) { //below main diagonal
-				return {-1, position.second - position.first - 1};
-			} else {
 				return {position.first - position.second - 1, -1};
+			} else {
+				return {-1, position.second - position.first - 1};
 			}
 		case RIGHT: //top right
 			if(position.first + position.second < SIZE -1 ) { //above secondary diagonal
