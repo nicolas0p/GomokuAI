@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <stdlib.h>
+#include <functional>
 
 #include "Board.h"
 #include "traits.h"
@@ -297,7 +298,7 @@ std::vector<std::pair<int, int>> Board::get_other_edges_sequence_in_direction(co
 {
 	std::vector<std::pair<int, int>> results;
 	auto dir_max = direction_max(direction, position);
-	for(auto it = direction_min(direction, position); it <= dir_max; it = get_next_in_direction(it, direction)) {
+	for(auto it = direction_min(direction, position); it != dir_max; it = get_next_in_direction(it, direction)) {
 		if(sequences.find(it) != sequences.end() && sequences.at(it).find(position) != sequences.at(it).end()) {
 			results.push_back(it);
 		}
@@ -308,27 +309,17 @@ std::vector<std::pair<int, int>> Board::get_other_edges_sequence_in_direction(co
 	return results;
 }
 
-std::pair<int, int> Board::direction_min(const Direction& direction, const std::pair<int, int>& position) const
+unsigned short Board::get_length_to_direction(const Direction& direction, const std::pair<int, int>& position, const std::function<std::pair<int, int> (const Direction&, const std::pair<int, int>&)>& limit, const std::function<std::pair<int, int> (const std::pair<int, int>&, const Direction&)>& next, const Moves& player) const
 {
-	switch(direction) {
-		case VERTICAL:
-			return {0, position.second};
-		case HORIZONTAL:
-			return {position.first, 0};
-		case LEFT:
-			if(position.first > position.second) { //below main diagonal
-				return {(SIZE - 1) - position.second, 0};
-			} else {
-				return {0, (SIZE - 1) - position.first};
-			}
-		case RIGHT:
-			if(position.first + position.second < SIZE -1 ) { //above secondary diagonal
-				return {position.first + position.second, 0};
-			} else {
-				return {SIZE - 1, position.second - (SIZE - 1 - position.first)};
-			}
+	auto boundary = limit(direction, position);
+	unsigned short length = 0;
+	for(auto it = next(position, direction); it != boundary; it = next(it, direction)) {
+		if(get_value_position(it) != player) {
+			return 0;
+		}
+		length++;
 	}
-	throw std::runtime_error("error 404: direction not found");
+	return length;
 }
 
 void Board::remove_move_self_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
@@ -338,6 +329,22 @@ void Board::remove_move_self_sequences(Board::Sequences_map& sequences, const st
 		//discover the sequence I am a part of in this direction
 		auto edges = get_sequence_part_of_in_direction(sequences, move, direction);
 		if(edges.first == limit && edges.second == limit) {
+			//should we create a sequence that begins in move and ends in direction_max or direction_min?
+			static const std::function<std::pair<int, int> (const Direction&, const std::pair<int, int>&)> dir_min = direction_min;
+			static const std::function<std::pair<int, int> (const Direction&, const std::pair<int, int>&)> dir_max = direction_max;
+			static const std::function<std::pair<int, int> (const std::pair<int, int>&, const Direction&)> next = get_next_in_direction;
+			static const std::function<std::pair<int, int> (const std::pair<int, int>&, const Direction&)> previous = get_previous_in_direction;
+			const auto player = get_value_position(move);
+			auto length_to_min = get_length_to_direction(direction, move, dir_min, previous, player);
+			if(length_to_min > 0) {
+				auto seq = Sequence(length_to_min, false, direction);
+				sequences[move][direction_min(direction, move)] = seq;
+			}
+			auto length_to_max = get_length_to_direction(direction, move, dir_max, next, player);
+			if(length_to_max > 0) {
+				auto seq = Sequence(length_to_max, false, direction);
+				sequences[move][direction_max(direction, move)] = seq;
+			}
 			continue;
 		}
 		unsigned short length = sequences[edges.first][edges.second].length;
@@ -352,7 +359,10 @@ void Board::remove_move_self_sequences(Board::Sequences_map& sequences, const st
 				bool is_open = sequences[near_open][far_open].other_is_open;
 				sequences[edges.first].erase(edges.second);
 				sequences[edges.second].erase(edges.first);
-				sequences[far_open][move] = Sequence(length - 1, true, direction);
+				bool is_valid_and_open = is_valid_position(far_open) && get_value_position(far_open) == NONE;
+				if(is_valid_and_open) {
+					sequences[far_open][move] = Sequence(length - 1, true, direction);
+				}
 				sequences[move][far_open] = Sequence(length - 1, is_open, direction);
 			} else {
 				//break the sequence in two, the new opening is 'move'
@@ -436,7 +446,10 @@ bool Board::is_on_the_edge_of_sequence(const std::pair<int, int>& position, cons
 std::pair<std::pair<int, int>, std::pair<int, int>> Board::get_sequence_part_of_in_direction(const Board::Sequences_map& sequences, const std::pair<int, int>& move, const Direction& direction) const
 {
 	auto dir_max = direction_max(direction, move);
-	for(auto it = move; it <= dir_max; it = get_next_in_direction(it, direction)) {
+	for(auto it = direction_min(direction, move); it != dir_max; it = get_next_in_direction(it, direction)) {
+		if(sequences.find(it) == sequences.end()) {
+			continue;
+		}
 		for(auto other_end : sequences.at(it)) {
 			if(is_position_in_sequence(it, other_end.first, direction, move)) {
 				return {it, other_end.first};
@@ -446,7 +459,7 @@ std::pair<std::pair<int, int>, std::pair<int, int>> Board::get_sequence_part_of_
 	return {{-1, -1}, {-1, -1}};
 }
 
-std::pair<int, int> Board::get_next_in_direction(const std::pair<int, int>& position, const Direction& direction) const
+std::pair<int, int> get_next_in_direction(const std::pair<int, int>& position, const Direction& direction)
 {
 	switch(direction) {
 		case VERTICAL:
@@ -461,24 +474,62 @@ std::pair<int, int> Board::get_next_in_direction(const std::pair<int, int>& posi
 	throw std::runtime_error("error 404: direction not found");
 }
 
-std::pair<int, int> Board::direction_max(const Direction& direction, const std::pair<int, int>& position) const
+std::pair<int, int> get_previous_in_direction(const std::pair<int, int>& position, const Direction& direction)
 {
 	switch(direction) {
 		case VERTICAL:
-			return {SIZE - 1, position.second};
+			return {position.first - 1, position.second};
 		case HORIZONTAL:
-			return {position.first, SIZE - 1};
+			return {position.first, position.second - 1};
 		case LEFT:
-			if(position.first > position.second) {
-				return {SIZE - 1, (SIZE - position.first - 1) + position.second};
-			} else {
-				return {(SIZE - position.second - 1) + position.first, SIZE - 1};
-			}
+			return {position.first - 1, position.second - 1};
 		case RIGHT:
-			if(position.first + position.second < SIZE -1 ) { //above secondary diagonal
-				return {position.first + position.second, 0};
+			return {position.first - 1, position.second + 1};
+	}
+	throw std::runtime_error("error 404: direction not found");
+}
+
+std::pair<int, int> direction_max(const Direction& direction, const std::pair<int, int>& position)
+{
+	switch(direction) {
+		case VERTICAL: //bottom
+			return {SIZE, position.second};
+		case HORIZONTAL: //right
+			return {position.first, SIZE};
+		case LEFT: //bottom right
+			if(position.first > position.second) {
+				return {SIZE, SIZE - position.first + position.second};
 			} else {
-				return {SIZE - 1, position.first + position.second - (SIZE - 1)};
+				return {SIZE - position.second + position.first, SIZE};
+			}
+		case RIGHT: //bottom left
+			if(position.first + position.second < SIZE -1 ) { //above secondary diagonal
+				return {position.first + position.second + 1, -1};
+			} else {
+				return {SIZE, position.second - SIZE + position.first};
+			}
+	}
+	throw std::runtime_error("error 404: direction not found");
+}
+
+std::pair<int, int> direction_min(const Direction& direction, const std::pair<int, int>& position)
+{
+	switch(direction) {
+		case VERTICAL: //top
+			return {-1, position.second};
+		case HORIZONTAL: //left
+			return {position.first, -1};
+		case LEFT: //top left
+			if(position.first > position.second) { //below main diagonal
+				return {-1, position.second - position.first - 1};
+			} else {
+				return {position.first - position.second - 1, -1};
+			}
+		case RIGHT: //top right
+			if(position.first + position.second < SIZE -1 ) { //above secondary diagonal
+				return {-1, position.first + position.second + 1};
+			} else {
+				return {position.first - SIZE + position.second, SIZE};
 			}
 	}
 	throw std::runtime_error("error 404: direction not found");

@@ -169,7 +169,7 @@ TEST(RemoveMoveFromBoard, Extremity_ThreeMoves_UpLeft1) {
 	board.insert_move({1,0}, Board::FIRSTPLAYER);
 	board.insert_move({0,0}, Board::FIRSTPLAYER);
 	board.remove_move({1,0});
-	EXPECT_EQ(308, sum_sequence_values(board, Board::FIRSTPLAYER));
+	EXPECT_EQ(305, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
 TEST(RemoveMoveFromBoard, Extremity_ThreeMoves_UpLeft2) {
