@@ -20,8 +20,7 @@ class Minimax : public InputComponent {
 	private:
 		//returns a tuple<move, value of move>
 		//value of move comes from the minimax execution or the heuristic if at leaf nodes
-		std::tuple<std::pair<int, int>, int, int> mmax(Board * board, unsigned int depth);
-		std::tuple<std::pair<int, int>, int, int> mmin(Board * board, unsigned int depth);
+		std::tuple<std::pair<int, int>, int, int> step(Board * board, unsigned int depth, const std::function<bool (const int&, const int&)>& compare, const Board::Moves& player);
 
 		std::function<int (const Board &, const Board::Moves &)> _heuristic;
 		std::function<std::set<std::pair<int, int>> (const Board& board)> _generate_moves;

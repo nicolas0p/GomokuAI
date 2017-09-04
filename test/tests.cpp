@@ -181,7 +181,7 @@ TEST(RemoveMoveFromBoard, Extremity_ThreeMoves_UpLeft1) {
 	board.insert_move({1,0}, Board::FIRSTPLAYER);
 	board.insert_move({0,0}, Board::FIRSTPLAYER);
 	board.remove_move({1,0});
-	EXPECT_EQ(308, sum_sequence_values(board, Board::FIRSTPLAYER));
+	EXPECT_EQ(305, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
 TEST(RemoveMoveFromBoard, Extremity_ThreeMoves_UpLeft2) {
@@ -267,7 +267,7 @@ TEST(RemoveMoveFromBoard, Extremity_ThreeMoves_UpRight3) {
 	board.insert_move({0,14}, Board::FIRSTPLAYER);
 	board.insert_move({1,14}, Board::FIRSTPLAYER);
 	board.remove_move({1,14});
-	EXPECT_EQ(308, sum_sequence_values(board, Board::FIRSTPLAYER));
+	EXPECT_EQ(305, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
 //
@@ -317,7 +317,7 @@ TEST(RemoveMoveFromBoard, Extremity_ThreeMoves_DownLeft1) {
 	board.insert_move({14,0}, Board::FIRSTPLAYER);
 	board.insert_move({14,1}, Board::FIRSTPLAYER);
 	board.remove_move({14,0});
-	EXPECT_EQ(308, sum_sequence_values(board, Board::FIRSTPLAYER));
+	EXPECT_EQ(8, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
 TEST(RemoveMoveFromBoard, Extremity_ThreeMoves_DownLeft2) {
@@ -395,10 +395,10 @@ TEST(RemoveMoveFromBoard, Extremity_ThreeMoves_DownRight3) {
 	board.insert_move({14,14}, Board::FIRSTPLAYER);
 	board.insert_move({13,14}, Board::FIRSTPLAYER);
 	board.remove_move({14,14});
-	EXPECT_EQ(308, sum_sequence_values(board, Board::FIRSTPLAYER));
+	EXPECT_EQ(8, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
-// With Adverser's moves
+// With Adversery's moves
 
 TEST(RemoveMoveFromBoard, OneMove_OneAdvers) {
 	Board board;
@@ -411,19 +411,19 @@ TEST(RemoveMoveFromBoard, OneMove_OneAdvers) {
 TEST(RemoveMoveFromBoard, TwoMoves_OneAdvers) {
 	Board board;
 	board.insert_move({5,5}, Board::FIRSTPLAYER);
-	board.insert_move({5,4}, Board::SECONDPLAYER);
-	board.insert_move({5,3}, Board::FIRSTPLAYER);
+	board.insert_move({5,3}, Board::SECONDPLAYER);
+	board.insert_move({5,4}, Board::FIRSTPLAYER);
 	board.remove_move({5,4});
 	EXPECT_EQ(0, sum_sequence_values(board, Board::SECONDPLAYER));
 }
 
-// Extremety + adverser's moves
+// Extremity + adversery's moves
 TEST(RemoveMoveFromBoard, Extremity_Advers_TwoMoves) {
 	Board board;
 	board.insert_move({0,0}, Board::FIRSTPLAYER);
 	board.insert_move({1,1}, Board::SECONDPLAYER);
 	board.remove_move({0,0});
-	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
+	EXPECT_EQ(-8, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
 TEST(RemoveMoveFromBoard, Extremity_Advers_ThreeMoves) {
