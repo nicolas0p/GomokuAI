@@ -48,17 +48,19 @@ std::tuple<std::pair<int, int>, int, int> Minimax::step(Board * board, unsigned 
 	//set of moves
 	auto moves = _generate_moves(*board);
 	std::tuple<std::pair<int, int>, int, int> choice;
+	const Board::Moves other_player = get_other_player(player);
+	const std::function<bool (const int&, const int&)> other_compare = get_other_compare(compare);
 	int alpha = std::numeric_limits<int>::min();
 	//bottom of tree
 	if (depth <= 1) {
 		std::get<0>(choice) = *moves.begin();
 		board->insert_move(std::get<0>(choice), player);
-		std::get<1>(choice) = _heuristic(*board, player);
+		std::get<1>(choice) = _heuristic(*board, _player);
 		board->remove_move(std::get<0>(choice));
 		moves.erase(moves.begin());
 		for(auto it : moves) {
 			board->insert_move(it, player);
-			int current = _heuristic(*board, player);
+			int current = _heuristic(*board, _player);
 			if(compare(current, std::get<1>(choice))) {
 				std::get<0>(choice) = it;
 				std::get<1>(choice) = current;
@@ -68,12 +70,12 @@ std::tuple<std::pair<int, int>, int, int> Minimax::step(Board * board, unsigned 
 		return choice;
 	}
 	board->insert_move(*moves.begin(), player);
-	choice = step(board, depth - 1, get_other_compare(compare), get_other_player(player));
+	choice = step(board, depth - 1, other_compare, other_player);
 	board->remove_move(*moves.begin());
 	moves.erase(moves.begin());
 	for(auto it : moves) {
 		board->insert_move(it, player);
-		int current = std::get<1>(step(board, depth - 1, get_other_compare(compare), get_other_player(player)));
+		int current = std::get<1>(step(board, depth - 1, other_compare, other_player));
 		if(compare(current, std::get<1>(choice))) {
 			std::get<0>(choice) = it;
 			std::get<1>(choice) = current;
