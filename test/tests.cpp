@@ -139,6 +139,12 @@ TEST(RemoveMoveFromBoard, Extremity_TwoMoves_UpLeft1) {
 	EXPECT_EQ(8, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
+/* ====================== ERRO ===========================================================================
+Ocorre na linha 339: get_sequence_part_of_in_direction retorna {-1,-1}{-1,-1}, quando direction == RiGHT
+Isso ocasiona a não deleção da sequencia:
+[{first = 0, second = 2}] = std::unordered_map with 1 elements = 
+	{[{first = 3, second = -1}] = {length = 2, other_is_open = false, direction = RIGHT}},
+=========================================================================================================*/
 TEST(RemoveMoveFromBoard, Extremity_TwoMoves_UpLeft2) {
 	Board board;
 	board.insert_move({1,1}, Board::FIRSTPLAYER);
@@ -147,6 +153,12 @@ TEST(RemoveMoveFromBoard, Extremity_TwoMoves_UpLeft2) {
 	EXPECT_EQ(8, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
+/* ====================== ERRO ===========================================================================
+Ocorre na linha 339: get_sequence_part_of_in_direction retorna {-1,-1}{-1,-1}, quando direction == RiGHT
+Isso ocasiona a não criação da sequencia:
+[{first = 1, second = 0}] = std::unordered_map with 1 elements = 
+	{[{first = -1, second = 2}] = {length = 1, other_is_open = false, direction = RIGHT}},
+=========================================================================================================*/
 TEST(RemoveMoveFromBoard, Extremity_TwoMoves_UpLeft3) {
 	Board board;
 	board.insert_move({0,1}, Board::FIRSTPLAYER);
