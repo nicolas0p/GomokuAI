@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Board.h"
 #include "UserInterface.h"
+#include "Heuristic.h"
 
 using std::unique_ptr;
 
