@@ -286,6 +286,25 @@ Board::Moves get_other_player(const Board::Moves& player)
 	return Board::FIRSTPLAYER;
 }
 
+/* Walk the given position in the given direction length units
+ * @param direction direction to walk in
+ * @param position initial position to walk from
+ * @param length distance to walk
+ * @return initil position + length in direction
+ * */
+std::pair<int, int> walk_in_direction(const Direction& direction, const std::pair<int, int>& position, const int& length)
+{
+	switch(direction) {
+		case VERTICAL: //to the bottom
+			return {position.first + length, position.second};
+		case HORIZONTAL: //to the right
+			return {position.first, position.second + length};
+		case LEFT: //to the bottom right
+			return {position.first + length, position.second + length};
+		case RIGHT: //to the bottom left
+			return {position.first + length, position.second - length};
+	}
+}
 void Board::remove_move_other_player_sequences(Sequences_map& sequences, const std::pair<int, int>& move)
 {
 	static constexpr auto limit = std::pair<int, int>{-1,-1};
@@ -306,12 +325,12 @@ void Board::remove_move_other_player_sequences(Sequences_map& sequences, const s
 			auto length_to_min = get_length_to_direction(direction, move, dir_min, previous, player);
 			if(length_to_min > 0) {
 				auto seq = Sequence(length_to_min, false, direction);
-				sequences[move][direction_min(direction, move)] = seq;
+				sequences[move][walk_in_direction(direction, move, -length_to_min)] = seq;
 			}
 			auto length_to_max = get_length_to_direction(direction, move, dir_max, next, player);
 			if(length_to_max > 0) {
 				auto seq = Sequence(length_to_max, false, direction);
-				sequences[move][direction_max(direction, move)] = seq;
+				sequences[move][walk_in_direction(direction, move, length_to_max)] = seq;
 			}
 		}
 	}
@@ -338,7 +357,7 @@ unsigned short Board::get_length_to_direction(const Direction& direction, const 
 	unsigned short length = 0;
 	for(auto it = next(position, direction); it != boundary; it = next(it, direction)) {
 		if(get_value_position(it) != player) {
-			return 0;
+			break;
 		}
 		length++;
 	}
@@ -365,12 +384,12 @@ void Board::remove_move_self_sequences(Board::Sequences_map& sequences, const st
 			auto length_to_min = get_length_to_direction(direction, move, dir_min, previous, player);
 			if(length_to_min > 0) {
 				auto seq = Sequence(length_to_min, false, direction);
-				sequences[move][direction_min(direction, move)] = seq;
+				sequences[move][walk_in_direction(direction, move, length_to_min)] = seq;
 			}
 			auto length_to_max = get_length_to_direction(direction, move, dir_max, next, player);
 			if(length_to_max > 0) {
 				auto seq = Sequence(length_to_max, false, direction);
-				sequences[move][direction_max(direction, move)] = seq;
+				sequences[move][walk_in_direction(direction, move, length_to_max)] = seq;
 			}
 			continue;
 		}
@@ -417,7 +436,7 @@ void Board::remove_move_self_sequences(Board::Sequences_map& sequences, const st
  * @param position1 first position to calculate the distance from.
  * @param position2 second position to calculate the distance to.
  * @param direction.
- * @returns the distance between position1 and position2 in direction.
+ * @return the distance between position1 and position2 in direction.
  * */
 unsigned short Board::distance(const std::pair<int, int>& position1, const std::pair<int, int>& position2, const Direction& direction) const
 {
