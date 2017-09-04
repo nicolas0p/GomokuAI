@@ -405,7 +405,71 @@ TEST(RemoveMoveFromBoard, TwoMoves_OneAdvers) {
 	EXPECT_EQ(0, sum_sequence_values(board, Board::SECONDPLAYER));
 }
 
-// Extremity + adversery's moves
+
+TEST(RemoveMoveFromBoard, Advers_One) {
+	Board board;
+	board.insert_move({7,7}, Board::FIRSTPLAYER);
+	board.insert_move({7,8}, Board::FIRSTPLAYER);
+	board.insert_move({7,9}, Board::FIRSTPLAYER);
+	board.insert_move({8,7}, Board::FIRSTPLAYER);
+	board.insert_move({8,8}, Board::SECONDPLAYER);
+	board.insert_move({8,9}, Board::FIRSTPLAYER);
+	board.insert_move({9,7}, Board::FIRSTPLAYER);
+	board.insert_move({9,8}, Board::FIRSTPLAYER);
+	board.insert_move({9,9}, Board::FIRSTPLAYER);
+	board.remove_move({9,7});
+	EXPECT_EQ((50000*4 + 300*12 + 13 - 1), sum_sequence_values(board, Board::FIRSTPLAYER));
+}
+
+TEST(RemoveMoveFromBoard, Advers_Two) {
+	Board board;
+	board.insert_move({3,3}, Board::FIRSTPLAYER);
+	board.insert_move({3,4}, Board::FIRSTPLAYER);
+	board.insert_move({3,5}, Board::SECONDPLAYER);
+	board.insert_move({4,3}, Board::FIRSTPLAYER);
+	board.insert_move({4,4}, Board::SECONDPLAYER);
+	board.insert_move({5,3}, Board::SECONDPLAYER);
+	board.insert_move({5,5}, Board::FIRSTPLAYER);
+	board.remove_move({5,5});
+	EXPECT_EQ((300*4 + 9 -(50000*2+13)), sum_sequence_values(board, Board::FIRSTPLAYER));
+}
+
+TEST(RemoveMoveFromBoard, Advers_Three) {
+	Board board;
+	board.insert_move({0,0}, Board::SECONDPLAYER);
+	board.insert_move({0,1}, Board::SECONDPLAYER);
+	board.insert_move({0,2}, Board::FIRSTPLAYER);
+	board.insert_move({1,0}, Board::FIRSTPLAYER);
+	board.insert_move({1,1}, Board::FIRSTPLAYER);
+	board.remove_move({0,2});
+	EXPECT_EQ((306 - (301)), sum_sequence_values(board, Board::FIRSTPLAYER));
+}
+
+TEST(RemoveMoveFromBoard, Advers_Four) {
+	Board board;
+	board.insert_move({0,14}, Board::SECONDPLAYER);
+	board.insert_move({1,14}, Board::SECONDPLAYER);
+	board.insert_move({2,14}, Board::SECONDPLAYER);
+	board.insert_move({3,14}, Board::FIRSTPLAYER);
+	board.insert_move({0,13}, Board::FIRSTPLAYER);
+	board.insert_move({1,13}, Board::FIRSTPLAYER);
+	board.insert_move({2,13}, Board::FIRSTPLAYER);
+	board.insert_move({3,13}, Board::FIRSTPLAYER);
+	board.remove_move({3,14});
+	EXPECT_EQ((5000000 + 13 - (50000)), sum_sequence_values(board, Board::FIRSTPLAYER));
+}
+
+TEST(RemoveMoveFromBoard, Advers_Five) {
+	Board board;
+	board.insert_move({0,0}, Board::FIRSTPLAYER);
+	board.insert_move({0,2}, Board::FIRSTPLAYER);
+	board.insert_move({1,1}, Board::FIRSTPLAYER);
+	board.insert_move({0,1}, Board::SECONDPLAYER);
+	board.insert_move({1,0}, Board::SECONDPLAYER);
+	board.remove_move({1,1});
+	EXPECT_EQ((0), sum_sequence_values(board, Board::FIRSTPLAYER));
+}
+
 TEST(RemoveMoveFromBoard, Extremity_Advers_TwoMoves) {
 	Board board;
 	board.insert_move({0,0}, Board::FIRSTPLAYER);
