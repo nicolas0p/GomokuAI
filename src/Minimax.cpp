@@ -22,14 +22,6 @@ std::function<bool (const int&, const int&)> get_other_compare(const std::functi
 	return gt;
 }
 
-Board::Moves get_other_player(const Board::Moves& player)
-{
-	if(player == Board::FIRSTPLAYER) {
-		return Board::SECONDPLAYER;
-	}
-	return Board::FIRSTPLAYER;
-}
-
 /*
  * */
 std::pair<int, int> Minimax::get_move(Board board)

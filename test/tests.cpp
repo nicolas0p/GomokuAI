@@ -418,7 +418,7 @@ TEST(RemoveMoveFromBoard, Advers_One) {
 	board.insert_move({9,8}, Board::FIRSTPLAYER);
 	board.insert_move({9,9}, Board::FIRSTPLAYER);
 	board.remove_move({9,7});
-	EXPECT_EQ((50000*4 + 300*12 + 13 - 1), sum_sequence_values(board, Board::FIRSTPLAYER));
+	EXPECT_EQ((50000*4 + 12*300 + 7 - 1), sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
 TEST(RemoveMoveFromBoard, Advers_Two) {
