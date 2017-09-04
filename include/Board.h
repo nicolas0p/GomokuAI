@@ -111,5 +111,6 @@ class Board {
 		unsigned short get_length_to_direction(const Direction& direction, const std::pair<int, int>& position, const std::function<std::pair<int, int> (const Direction&, const std::pair<int, int>&)>& limit, const std::function<std::pair<int, int> (const std::pair<int, int>&, const Direction&)>& next, const Moves& player) const;
 };
 
-#endif /* BOARD_H */
+Board::Moves get_other_player(const Board::Moves& player);
 
+#endif /* BOARD_H */
