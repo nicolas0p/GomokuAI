@@ -27,7 +27,7 @@ void Game::start_game() {
 		///// First player turn /////
 		_board.insert_move(_first_player->make_move(), Board::FIRSTPLAYER);
 		// Update first player's points
-		_first_player->add_points(sum_sequence_values(_board, Board::FIRSTPLAYER));
+		_first_player->set_points(sum_sequence_values(_board, Board::FIRSTPLAYER));
 		// print turn and board
 		_n_move++;
 		std::cout << "---------------" << _n_move << "º Move -----------------" << std::endl;
@@ -42,7 +42,7 @@ void Game::start_game() {
 		///// Second player turn /////
 		_board.insert_move(_second_player->make_move(), Board::SECONDPLAYER);
 		// Update second player's points
-		_second_player->add_points(sum_sequence_values(_board, Board::SECONDPLAYER));
+		_second_player->set_points(sum_sequence_values(_board, Board::SECONDPLAYER));
 
 		// print turn and board
 		_n_move++;

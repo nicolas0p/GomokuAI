@@ -15,6 +15,7 @@ class Player {
 		virtual ~Player();
 		virtual std::pair<int, int> make_move();
 		void add_points(int p);
+		void set_points(int p);
 		int get_points();
 		Board::Moves get_player();
 
