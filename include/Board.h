@@ -69,8 +69,8 @@ class Board {
 		Sequences_map first_player_sequences() const;
 		Sequences_map second_player_sequences() const;
 
-		void insert_move(std::pair<int, int> position, Board::Moves player); // players = Moves
-		void remove_move(std::pair<int, int> position);
+		void insert_move(const std::pair<int, int>& position, const Board::Moves& player); // players = Moves
+		void remove_move(const std::pair<int, int>& position);
 		Moves get_value_position(std::pair<int, int> position)  const ; // returns a Moves;
 		std::set<std::pair<int, int>> available_positions() const;
 

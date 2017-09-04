@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <stdlib.h>
 #include <functional>
+#include <string>
 
 #include "Board.h"
 #include "traits.h"
@@ -17,12 +18,10 @@ Board::Board() : _board(SIZE * SIZE, NONE),	_winner(NONE)
 }
 
 // position need to be empty
-void Board::insert_move(std::pair<int, int> position, Moves player)
+void Board::insert_move(const std::pair<int, int>& position, const Moves& player)
 {
-	//_board[((position.first) * SIZE) + position.second] = player; // position.first = line; position.second = col
 	if (get_value_position(position) != NONE) {
-		std::cout << "ERRO!!! Tentativa de inserir jogada em posição já ocupada" << std::endl;
-		return;
+		throw std::runtime_error("ERRO!!! Tentativa de inserir jogada em posição já ocupada");
 	}
 	_board.at(((position.first) * SIZE) + position.second) = player;
 	_available_positions.erase(position);
@@ -36,7 +35,7 @@ void Board::insert_move(std::pair<int, int> position, Moves player)
 }
 
 // position can't be empty
-void Board::remove_move(std::pair<int, int> position)
+void Board::remove_move(const std::pair<int, int>& position)
 {
 	auto player = _board[((position.first) * SIZE) + position.second];
 	if (player == FIRSTPLAYER){
@@ -48,8 +47,9 @@ void Board::remove_move(std::pair<int, int> position)
 		remove_move_other_player_sequences(_sequences_first_player, position);
 	}
 	else if (player == NONE) // check if position set a place on board that is empty
-		throw std::runtime_error("ERRO!!! Tentativa de apagar uma posição sem jogada!");
+		throw std::runtime_error("ERRO!!! Tentativa de apagar uma posição sem jogada! Position=(" + std::to_string(position.first) + "," + std::to_string(position.second) + ")");
 	_board[((position.first) * SIZE) + position.second] = NONE;
+	_available_positions.insert(position);
 }
 
 void Board::remove_move_sequences(Board::Sequences_map& sequences, Board::Sequences_map& seq_advers, const std::pair<int, int>& position)

@@ -57,7 +57,7 @@ std::tuple<std::pair<int, int>, int, int> Minimax::step(Board * board, unsigned 
 		board->insert_move(std::get<0>(choice), player);
 		std::get<1>(choice) = _heuristic(*board, _player);
 		board->remove_move(std::get<0>(choice));
-		moves.erase(moves.begin());
+		//moves.erase(moves.begin());
 		for(auto it : moves) {
 			board->insert_move(it, player);
 			int current = _heuristic(*board, _player);
@@ -72,7 +72,7 @@ std::tuple<std::pair<int, int>, int, int> Minimax::step(Board * board, unsigned 
 	board->insert_move(*moves.begin(), player);
 	choice = step(board, depth - 1, other_compare, other_player);
 	board->remove_move(*moves.begin());
-	moves.erase(moves.begin());
+	//moves.erase(moves.begin());
 	for(auto it : moves) {
 		board->insert_move(it, player);
 		int current = std::get<1>(step(board, depth - 1, other_compare, other_player));
