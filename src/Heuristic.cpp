@@ -20,7 +20,7 @@ int sum_sequence_values(const Board & board, const Board::Moves & player)
 	int score = 0;
 	for(auto seqs : my_sequence) {
 		for(auto it : seqs.second) {
-			if(it.second.length < 5) {
+			if(it.second.length <= 5) {
 				score += points_per_length[it.second.length - 1];
 			} else {
 				throw std::runtime_error("Sequence [" + std::to_string(seqs.first.first) + "," + std::to_string(seqs.first.second) + "][" + std::to_string(it.first.first) + "," + std::to_string(it.first.second) + "] has invalid length = " + std::to_string(it.second.length));
@@ -29,7 +29,11 @@ int sum_sequence_values(const Board & board, const Board::Moves & player)
 	}
 	for(auto seqs : other_sequence) {
 		for(auto it : seqs.second) {
-			score -= points_per_length[it.second.length - 1];
+			if(it.second.length <= 5) {
+				score -= points_per_length[it.second.length - 1];
+			} else {
+				throw std::runtime_error("OtherSequence [" + std::to_string(seqs.first.first) + "," + std::to_string(seqs.first.second) + "][" + std::to_string(it.first.first) + "," + std::to_string(it.first.second) + "] has invalid length = " + std::to_string(it.second.length));
+			}
 		}
 	}
 	return score;
