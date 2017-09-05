@@ -5,6 +5,7 @@
 #include "Heuristic.h"
 #include "MoveGenerator.h"
 #include "traits.h"
+#include "CommandLineInterface.h"
 
 /* Insert_move */
 
@@ -533,4 +534,24 @@ TEST(RealGameplay, BothPlayersPlayTwiceDepth2) {
 	board.insert_move({4,6}, Board::FIRSTPLAYER);
 	board.insert_move(minimax.get_move(board), Board::SECONDPLAYER);
 	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
+}
+
+TEST(RealGameplay, BothPlayersPlayTwiceDepth2_Firstwins) {
+	Board board;
+	CommandLineInterface gui;
+	Minimax minimax(sum_sequence_values, simple_move_generator, 2, Board::SECONDPLAYER);
+	board.insert_move({7,7}, Board::FIRSTPLAYER);
+	board.insert_move(minimax.get_move(board), Board::SECONDPLAYER);
+	gui.draw(board);
+	board.insert_move({6,7}, Board::FIRSTPLAYER);
+	board.insert_move(minimax.get_move(board), Board::SECONDPLAYER);
+	gui.draw(board);
+	board.insert_move({5,7}, Board::FIRSTPLAYER);
+	board.insert_move(minimax.get_move(board), Board::SECONDPLAYER);
+	gui.draw(board);
+	board.insert_move({4,7}, Board::FIRSTPLAYER);
+	board.insert_move(minimax.get_move(board), Board::SECONDPLAYER);
+	gui.draw(board);
+	board.insert_move({8,7}, Board::FIRSTPLAYER);
+	ASSERT_GE(sum_sequence_values(board, Board::FIRSTPLAYER), 400000000);
 }
