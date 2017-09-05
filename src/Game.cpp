@@ -17,6 +17,8 @@ Game::Game(Board* board, unique_ptr<Player> first_player, unique_ptr<Player> sec
 
 Game::~Game() {}
 
+/* Method runs the game, alternating the turns between players until someone wins or end in a draw.
+ **/
 void Game::start_game() {
 
 	// print empty board

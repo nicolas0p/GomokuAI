@@ -88,16 +88,8 @@ class Board {
 		Sequences_map _sequences_first_player;
 		Sequences_map _sequences_second_player;
 
-		void remove_move_sequences(Board::Sequences_map& sequences, Board::Sequences_map& seq_advers, const std::pair<int, int>& position);
-		std::set<std::pair<int, int>> get_neighbors(std::pair<int, int> p);
-
 		Moves winner() const;
 		Moves _winner;
-		std::pair<std::pair<int, int>, Board::Sequence> select_sequence_by_position(std::pair<int, int> b, std::unordered_map<std::pair<int, int>, Board::Sequence, pairhash> seq,std::pair<int, int> p);
-		std::pair<std::pair<int,int>, Direction> get_opposite_position(std::pair<int,int> n, std::pair<int,int> p);
-		std::pair<int, int> find_begin_sequence(Sequences_map& s, std::pair<int,int> p, Direction d);
-		int calculate_lenght(std::pair<int, int> begin, std::pair<int, int> end, Direction d);
-		void aux_remove_move(Sequences_map& sequences, std::pair<int, int> it, std::pair<int, int> position);
 
 
 		void remove_move_self_sequences(Sequences_map& sequences, const std::pair<int, int>& move);
