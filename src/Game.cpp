@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#define WINNER 35000
+#define WINNER 400000000
 #define MAX 256 // quantidade-1 jogadas possíveis de realizar num GUMOKU
 
 Game::Game(Board* board, unique_ptr<Player> first_player, unique_ptr<Player> second_player, unique_ptr<UserInterface> user_interface) :
@@ -27,7 +27,7 @@ void Game::start_game() {
 		///// First player turn /////
 		_board->insert_move(_first_player->make_move(), Board::FIRSTPLAYER);
 		// Update first player's points
-		_first_player->add_points(points_calculator(*_board));
+		_first_player->set_points(sum_sequence_values(*_board, Board::FIRSTPLAYER));
 		// print turn and board
 		_n_move++;
 		std::cout << "---------------" << _n_move << "º Move -----------------" << std::endl;
@@ -42,7 +42,7 @@ void Game::start_game() {
 		///// Second player turn /////
 		_board->insert_move(_second_player->make_move(), Board::SECONDPLAYER);
 		// Update second player's points
-		_second_player->add_points(points_calculator(*_board));
+		_second_player->set_points(sum_sequence_values(*_board, Board::SECONDPLAYER));
 
 		// print turn and board
 		_n_move++;
@@ -60,14 +60,3 @@ void Game::start_game() {
 		std::cout << "--------------- DRAW!!! ----------------" << std::endl;
 
 }
-
-void Game::help(){
-	std::cout << "Quem fizer uma sequencia de 5 peças ganha!" << std::endl;
-}
-
-int Game::points_calculator(Board &_board)
-{
-	/////////////// FAZER AINDA!!! ////////////////////////////////////////////////////////////////////
-	return 1;
-}
-

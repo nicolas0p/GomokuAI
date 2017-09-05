@@ -31,3 +31,8 @@ Board::Moves Player::get_player()
 {
 	return _player;
 }
+
+void Player::set_points(int p)
+{
+	_point = p;
+}
