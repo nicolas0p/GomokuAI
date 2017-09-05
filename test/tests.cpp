@@ -72,6 +72,14 @@ TEST(InsertMoveInBoard, InsertSecondPlayerMoveClose) {
 	EXPECT_EQ(300+12-7, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
+TEST(InsertMoveInBoard, InsertTwoSpecificMoves) {
+	Board board;
+	board.insert_move({7,6}, Board::FIRSTPLAYER);
+	board.insert_move({0,0}, Board::FIRSTPLAYER);
+	board.remove_move({0,0});
+	board.remove_move({7,6});
+	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
+}
 /* Remove_move */
 TEST(RemoveMoveFromBoard, OneMove) {
 	Board board;
@@ -125,6 +133,15 @@ TEST(RemoveMoveFromBoard, ThreeMoves_Right) {
 }
 
 // Extremety
+TEST(RemoveMoveFromBoard, Extremity_OneFirst_OneSecond_Remove) {
+	Board board;
+	board.insert_move({0,0}, Board::FIRSTPLAYER);
+	board.insert_move({0,1}, Board::SECONDPLAYER);
+	EXPECT_EQ(2-4, sum_sequence_values(board, Board::FIRSTPLAYER));
+	board.remove_move({0,1});
+	EXPECT_EQ(3, sum_sequence_values(board, Board::FIRSTPLAYER));
+}
+
 TEST(RemoveMoveFromBoard, Extremity_OneMove_UpLeft) {
 	Board board;
 	board.insert_move({0,0}, Board::SECONDPLAYER);
@@ -538,20 +555,20 @@ TEST(RealGameplay, BothPlayersPlayTwiceDepth2) {
 
 TEST(RealGameplay, BothPlayersPlayTwiceDepth2_Firstwins) {
 	Board board;
-	CommandLineInterface gui;
+	//CommandLineInterface gui;
 	Minimax minimax(sum_sequence_values, simple_move_generator, 2, Board::SECONDPLAYER);
 	board.insert_move({7,7}, Board::FIRSTPLAYER);
 	board.insert_move(minimax.get_move(board), Board::SECONDPLAYER);
-	gui.draw(board);
+	//gui.draw(board);
 	board.insert_move({6,7}, Board::FIRSTPLAYER);
 	board.insert_move(minimax.get_move(board), Board::SECONDPLAYER);
-	gui.draw(board);
+	//gui.draw(board);
 	board.insert_move({5,7}, Board::FIRSTPLAYER);
 	board.insert_move(minimax.get_move(board), Board::SECONDPLAYER);
-	gui.draw(board);
+	//gui.draw(board);
 	board.insert_move({4,7}, Board::FIRSTPLAYER);
 	board.insert_move(minimax.get_move(board), Board::SECONDPLAYER);
-	gui.draw(board);
+	//gui.draw(board);
 	board.insert_move({8,7}, Board::FIRSTPLAYER);
 	ASSERT_GE(sum_sequence_values(board, Board::FIRSTPLAYER), 400000000);
 }

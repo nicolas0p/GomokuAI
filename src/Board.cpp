@@ -325,12 +325,12 @@ void Board::remove_move_other_player_sequences(Sequences_map& sequences, const s
 			auto length_to_min = get_length_to_direction(direction, move, dir_min, previous, player);
 			if(length_to_min > 0) {
 				auto seq = Sequence(length_to_min, false, direction);
-				sequences[move][walk_in_direction(direction, move, -length_to_min)] = seq;
+				sequences[move][walk_in_direction(direction, move, -length_to_min - 1)] = seq;
 			}
 			auto length_to_max = get_length_to_direction(direction, move, dir_max, next, player);
 			if(length_to_max > 0) {
 				auto seq = Sequence(length_to_max, false, direction);
-				sequences[move][walk_in_direction(direction, move, length_to_max)] = seq;
+				sequences[move][walk_in_direction(direction, move, length_to_max + 1)] = seq;
 			}
 		}
 	}

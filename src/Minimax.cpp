@@ -40,7 +40,7 @@ std::pair<std::pair<int, int>, int> Minimax::step(Board * board, unsigned int de
 {
 	//set of moves
 	auto moves = _generate_moves(*board);
-	std::pair<std::pair<int, int>, int> choice;
+	std::pair<std::pair<int, int>, int> choice = {{0,0}, pruning_factor};
 	const Board::Moves other_player = get_other_player(player);
 	const std::function<bool (const int&, const int&)> other_compare = get_other_compare(compare);
 	//bottom of tree
@@ -49,7 +49,7 @@ std::pair<std::pair<int, int>, int> Minimax::step(Board * board, unsigned int de
 		board->insert_move(choice.first, player);
 		choice.second = _heuristic(*board, _player);
 		board->remove_move(choice.first);
-		//moves.erase(moves.begin());
+		moves.erase(moves.begin());
 		for(auto it : moves) {
 			board->insert_move(it, player);
 			int current = _heuristic(*board, _player);
@@ -68,7 +68,7 @@ std::pair<std::pair<int, int>, int> Minimax::step(Board * board, unsigned int de
 	board->insert_move(*moves.begin(), player);
 	choice = step(board, depth - 1, other_compare, other_player, choice.second);
 	board->remove_move(*moves.begin());
-	//moves.erase(moves.begin());
+	moves.erase(moves.begin());
 	for(auto it : moves) {
 		board->insert_move(it, player);
 		int current = step(board, depth - 1, other_compare, other_player, choice.second).second;
