@@ -11,7 +11,7 @@ using std::unique_ptr;
 
 class Player {
 	public:
-		Player(const Board & board, unique_ptr<InputComponent> && input_component, Board::Moves player);
+		Player(Board * board, unique_ptr<InputComponent> && input_component, Board::Moves player);
 		virtual ~Player();
 		virtual std::pair<int, int> make_move();
 		void add_points(int p);
@@ -20,7 +20,7 @@ class Player {
 
 	protected:
 		int _point;
-		const Board _board;
+		Board * _board;
 		unique_ptr<InputComponent> _input_component;
 		Board::Moves _player;
 };

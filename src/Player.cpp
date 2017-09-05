@@ -3,7 +3,7 @@
 
 using std::unique_ptr;
 
-Player::Player(const Board & board, unique_ptr<InputComponent> && input_component, Board::Moves player) :
+Player::Player(Board * board, unique_ptr<InputComponent> && input_component, Board::Moves player) :
 	_point(0),
 	_board{board},
 	_input_component{std::move(input_component)},
@@ -14,7 +14,7 @@ Player::~Player() {}
 
 std::pair<int, int> Player::make_move()
 {
-	return _input_component->get_move(_board);
+	return _input_component->get_move(*_board);
 }
 
 void Player::add_points(int p)

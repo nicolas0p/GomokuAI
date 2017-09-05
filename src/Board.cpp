@@ -23,8 +23,6 @@ void Board::insert_move(const std::pair<int, int>& position, const Moves& player
 	if (get_value_position(position) != NONE) {
 		throw std::runtime_error("ERRO!!! Tentativa de inserir jogada em posição já ocupada");
 	}
-	_board.at(((position.first) * SIZE) + position.second) = player;
-	_available_positions.erase(position);
 	if(player == Board::FIRSTPLAYER) {
 		insert_move_self_sequences(_sequences_first_player, position);
 		insert_move_other_player_sequences(_sequences_second_player, position);
@@ -32,6 +30,8 @@ void Board::insert_move(const std::pair<int, int>& position, const Moves& player
 		insert_move_self_sequences(_sequences_second_player, position);
 		insert_move_other_player_sequences(_sequences_first_player, position);
 	}
+	_board.at(((position.first) * SIZE) + position.second) = player;
+	_available_positions.erase(position);
 }
 
 // position can't be empty
