@@ -572,3 +572,26 @@ TEST(RealGameplay, BothPlayersPlayTwiceDepth2_Firstwins) {
 	board.insert_move({8,7}, Board::FIRSTPLAYER);
 	ASSERT_GE(sum_sequence_values(board, Board::FIRSTPLAYER), 400000000);
 }
+
+TEST(RealGameplay, BothPlayersComputers) {
+	Board board;
+	CommandLineInterface gui;
+	Minimax minimax_first(sum_sequence_values, simple_move_generator, 2, Board::FIRSTPLAYER);
+	Minimax minimax_second(sum_sequence_values, simple_move_generator, 2, Board::SECONDPLAYER);
+	board.insert_move(minimax_first.get_move(board), Board::FIRSTPLAYER);
+	board.insert_move(minimax_second.get_move(board), Board::SECONDPLAYER);
+	gui.draw(board);
+	board.insert_move(minimax_first.get_move(board), Board::FIRSTPLAYER);
+	board.insert_move(minimax_second.get_move(board), Board::SECONDPLAYER);
+	gui.draw(board);
+	board.insert_move(minimax_first.get_move(board), Board::FIRSTPLAYER);
+	board.insert_move(minimax_second.get_move(board), Board::SECONDPLAYER);
+	gui.draw(board);
+	board.insert_move(minimax_first.get_move(board), Board::FIRSTPLAYER);
+	board.insert_move(minimax_second.get_move(board), Board::SECONDPLAYER);
+	gui.draw(board);
+	board.insert_move(minimax_first.get_move(board), Board::FIRSTPLAYER);
+	gui.draw(board);
+	ASSERT_GE(sum_sequence_values(board, Board::FIRSTPLAYER), 400000000);
+}
+
