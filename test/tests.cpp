@@ -517,14 +517,14 @@ TEST(Minimax, Depth2_OnePlayer) {
 	EXPECT_EQ(300*2 + 6*2, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
-/*TEST(Minimax, Depth3_OnePlayer) {
+TEST(Minimax, Depth3_OnePlayer) {
 	Board board;
 	board.insert_move({7,6}, Board::FIRSTPLAYER);
 	Minimax minimax(sum_sequence_values, simple_move_generator, 3, Board::FIRSTPLAYER);
 	auto move = minimax.get_move(board);
 	board.insert_move(move, Board::FIRSTPLAYER);
 	EXPECT_EQ(300*2 + 6*2, sum_sequence_values(board, Board::FIRSTPLAYER));
-}*/
+}
 
 TEST(RealGameplay, BothPlayersPlayTwiceDepth2) {
 	Board board;
