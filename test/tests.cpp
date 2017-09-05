@@ -1,5 +1,7 @@
 #include "gtest/gtest.h"
 
+#include <vector>
+
 #include "Minimax.h"
 #include "Board.h"
 #include "Heuristic.h"
@@ -505,6 +507,18 @@ TEST(RemoveMoveFromBoard, Extremity_Advers_ThreeMoves) {
 	EXPECT_EQ(-3, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
+TEST(RemoveMoveFromBoard, AddManyRemoveManyBothPlayers) {
+	Board board;
+	board.insert_move({5,5}, Board::FIRSTPLAYER);
+	std::vector<std::pair<int, int>> positions = {{4,4}, {4,5}, {4,6}, {5,4}, {5,6}, {6,4}, {6,5}, {6,6}};
+	for(auto it : positions) {
+		board.insert_move(it, Board::SECONDPLAYER);
+	}
+	for(auto it : positions) {
+		board.remove_move(it);
+	}
+	EXPECT_EQ(8, sum_sequence_values(board, Board::FIRSTPLAYER));
+}
 
 /* MinMax*/
 TEST(Minimax, Depth1_OnePlayer) {
@@ -575,23 +589,23 @@ TEST(RealGameplay, BothPlayersPlayTwiceDepth2_Firstwins) {
 
 TEST(RealGameplay, BothPlayersComputers) {
 	Board board;
-	CommandLineInterface gui;
+	//CommandLineInterface gui;
 	Minimax minimax_first(sum_sequence_values, simple_move_generator, 2, Board::FIRSTPLAYER);
 	Minimax minimax_second(sum_sequence_values, simple_move_generator, 2, Board::SECONDPLAYER);
 	board.insert_move(minimax_first.get_move(board), Board::FIRSTPLAYER);
 	board.insert_move(minimax_second.get_move(board), Board::SECONDPLAYER);
-	gui.draw(board);
+	//gui.draw(board);
 	board.insert_move(minimax_first.get_move(board), Board::FIRSTPLAYER);
 	board.insert_move(minimax_second.get_move(board), Board::SECONDPLAYER);
-	gui.draw(board);
+	//gui.draw(board);
 	board.insert_move(minimax_first.get_move(board), Board::FIRSTPLAYER);
 	board.insert_move(minimax_second.get_move(board), Board::SECONDPLAYER);
-	gui.draw(board);
+	//gui.draw(board);
 	board.insert_move(minimax_first.get_move(board), Board::FIRSTPLAYER);
 	board.insert_move(minimax_second.get_move(board), Board::SECONDPLAYER);
-	gui.draw(board);
+	//gui.draw(board);
 	board.insert_move(minimax_first.get_move(board), Board::FIRSTPLAYER);
-	gui.draw(board);
+	//gui.draw(board);
 	ASSERT_GE(sum_sequence_values(board, Board::FIRSTPLAYER), 400000000);
 }
 
