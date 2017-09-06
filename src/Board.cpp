@@ -162,13 +162,13 @@ std::vector<std::pair<int, int>> Board::get_other_edges_sequence_in_direction(co
 	return results;
 }
 
-/* 
- * @param direction 
- * @param position
- * @param limit
- * @param next
- * @param player
- * @return 
+/* Helper method to get the lenght of a sequence starting in position in a given direction
+ * @param direction The direction the sequence must be in
+ * @param position The position in which the sequences we are looking for should begin
+ * @param limit Function to generate the limit in this direction. Max or min
+ * @param next Function to generate the next position in this direction. Next, towards max, or previous, towards min
+ * @param player The player
+ * @return Lenght of a sequence starting in position, going in the direction towards the position returned by the limit function
  * */
 unsigned short Board::get_length_to_direction(const Direction& direction, const std::pair<int, int>& position, const std::function<std::pair<int, int> (const Direction&, const std::pair<int, int>&)>& limit, const std::function<std::pair<int, int> (const std::pair<int, int>&, const Direction&)>& next, const Moves& player) const
 {
@@ -369,10 +369,10 @@ std::pair<int, int> get_previous_in_direction(const std::pair<int, int>& positio
 	throw std::runtime_error("error 404: direction not found");
 }
 
-/* 
- * @param direction
- * @param position
- * @return 
+/* Calculates the maximum position, just outside the board, for a position in a direction
+ * @param direction The direction of the max
+ * @param position The position used to calculate the max
+ * @return The maximum position in the direction regarding the position.
  * */
 std::pair<int, int> direction_max(const Direction& direction, const std::pair<int, int>& position)
 {
@@ -398,10 +398,10 @@ std::pair<int, int> direction_max(const Direction& direction, const std::pair<in
 }
 
 
-/* 
- * @param direction
- * @param position
- * @return 
+/* Calculates the minimum position, just outside the board, for a position in a direction
+ * @param direction The direction of the min
+ * @param position The position used to calculate the min
+ * @return The minimum position in the direction regarding the position.
  * */
 std::pair<int, int> direction_min(const Direction& direction, const std::pair<int, int>& position)
 {
@@ -426,11 +426,11 @@ std::pair<int, int> direction_min(const Direction& direction, const std::pair<in
 	throw std::runtime_error("error 404: direction not found");
 }
 
-/* 
- * @param opening1
- * @param opening2
- * @param direction
- * @param position
+/* Calculates if the position is between opening1 and opening2 in the direction
+ * @param opening1 One opening of a sequence
+ * @param opening2 The other opening of the sequence
+ * @param direction The direction the sequence is in
+ * @param position The position that is wanted to know if it is inside the sequence
  * @return true if the position is in the sequence
  * */
 bool Board::is_position_in_sequence(const std::pair<int, int>& opening1, const std::pair<int, int>& opening2, const Direction& direction, const std::pair<int, int>& position) const
@@ -453,8 +453,8 @@ bool Board::is_position_in_sequence(const std::pair<int, int>& opening1, const s
 }
 
 /* Handles the sequences structures. This method should be called with the sequences of the player that is making the move now. It will increase the sequences where the move lands.
- * @param sequences
- * @param move
+ * @param sequences The sequences map structure containing all one player sequences
+ * @param move Given player move
  **/
 void Board::insert_move_self_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
 {
@@ -544,9 +544,9 @@ void Board::insert_move_self_sequences(Board::Sequences_map& sequences, const st
 }
 
 /*This method generate the length 1 sequence in the direction
- * @param center the center position for the sequence
+ * @param center the center position for the sequence, around which the edges will be
  * @param direction the direction of the sequence
- * @return
+ * @return The two edges of the sequence around center in the direction
  * */
 std::pair<std::pair<int, int>, std::pair<int, int>> Board::generate_sequence_len1(const std::pair<int, int>& center, const Direction& direction) const
 {
@@ -581,9 +581,9 @@ bool Board::is_valid_position(const std::pair<int, int> position) const
 	return !(position.first < 0 || position.second < 0 || position.first >= SIZE || position.second >= SIZE );
 }
 
-/* 
- * @param direction
- * @return
+/* Function used to iterate over all the possible directions
+ * @param direction The current direction
+ * @return The next direction
  * */
 std::vector<Direction> _possible_directions = {HORIZONTAL, LEFT, RIGHT, VERTICAL};
 Direction next_direction(const Direction& direction)
@@ -592,8 +592,8 @@ Direction next_direction(const Direction& direction)
 }
 
 /* Handles the sequences structures. This method should be called with the sequences of the player that is NOT making the move now. It will remove the openings of the sequences where the move lands.
- * @param sequences
- * @param move
+ * @param sequences The sequences map structure containing all the sequences of the player that is not making a move this turn.
+ * @param move Move made this turn.
  **/
 void Board::insert_move_other_player_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
 {
@@ -613,11 +613,11 @@ void Board::insert_move_other_player_sequences(Board::Sequences_map& sequences, 
 	sequences.erase(move);
 }
 
-/* 
- * @param sequences
- * @param opening
- * @param move
- * @return
+/* Calculates the next opening of a sequence, being move the current sequence opening
+ * @param sequence The sequence that is going to be extended
+ * @param opening The other opening of the sequence, the side that will not be extended
+ * @param move The current opening of the sequence that is going to be extended
+ * @return The new opening of the sequence considering it was already extended
  **/
 std::pair<int, int> Board::next_opening(const Sequence& sequence, const std::pair<int, int>& opening, const std::pair<int, int>& move) const
 {

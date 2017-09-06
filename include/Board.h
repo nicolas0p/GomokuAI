@@ -9,6 +9,8 @@
 
 #include "traits.h"
 
+/* Hash function for a pair of values. Needed by the unordered map structure.
+ * */
 struct pairhash {
 public:
   template <typename T, typename U>
@@ -17,7 +19,10 @@ public:
 	 return x.first * SIZE + x.second;
   }
 };
-
+/* Represents all four directions a sequence can be in.
+ * Left represents the sequences that begin on the upper left corner and end on the bottom right.
+ * Right represents the sequences that begin on the upper right corner and en on the bottom left.
+ * */
 enum Direction {
 	VERTICAL = 0, HORIZONTAL = 1, LEFT = 2/* \ */, RIGHT = 3/* / */
 };
@@ -30,6 +35,11 @@ std::pair<int, int> get_previous_in_direction(const std::pair<int, int>& positio
 
 class Board {
 	public:
+		/* Represents all the possible state a position on the board could be.
+		 * NONE means no move has been played there yet.
+		 * FIRSTPLAYER means the first player has played in this position.
+		 * SECONDPLAYER means the second player has played in this position.
+		 * */
 		enum Moves {
 			NONE = 0,
 			FIRSTPLAYER = 1,
@@ -38,8 +48,8 @@ class Board {
 
 		Board();
 		~Board() {}
-		//Contains a sequence length and direction
-		//other_is_open contains if the other opening is open
+		/* Contains a sequence length, direction and if the other opening of the sequence is open or not
+		*/
 		struct Sequence {
 			Sequence(){}
 			Sequence(const unsigned short& len, const bool& ot_is_open, const Direction& dir):

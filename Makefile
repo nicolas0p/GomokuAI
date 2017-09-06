@@ -17,7 +17,7 @@ SOURCE_FILES :=$(filter-out $(MAIN_FILE),$(wildcard $(SOURCE_DIR)/*.cpp))
 TEST_SOURCE_FILES :=$(wildcard $(TEST_DIR)/*.cpp)
 .PHONY:make debug test clean
 make:
-	$(CC) -o $(EXEC) $(SOURCE_FILES) $(MAIN_FILE) $(CFLAGS) -I$(HEADERS_DIR)
+	$(CC) -O3 -o $(EXEC) $(SOURCE_FILES) $(MAIN_FILE) $(CFLAGS) -I$(HEADERS_DIR)
 
 debug:
 	$(CC) -o $(EXEC) $(SOURCE_FILES) $(MAIN_FILE) $(CFLAGS) $(DEBUGFLAGS) -I$(HEADERS_DIR)
