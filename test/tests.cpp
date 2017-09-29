@@ -82,6 +82,8 @@ TEST(InsertMoveInBoard, InsertTwoSpecificMoves) {
 	board.remove_move({7,6});
 	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
+
+
 /* Remove_move */
 TEST(RemoveMoveFromBoard, OneMove) {
 	Board board;
@@ -538,7 +540,7 @@ TEST(Minimax, Depth1_TwoPlayers) {
 	board.insert_move(move, Board::SECONDPLAYER);
 	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
-
+/*
 TEST(Minimax, Depth2_OnePlayer) {
 	Board board;
 	board.insert_move({7,6}, Board::FIRSTPLAYER);
@@ -546,6 +548,30 @@ TEST(Minimax, Depth2_OnePlayer) {
 	auto move = minimax.get_move(board);
 	board.insert_move(move, Board::FIRSTPLAYER);
 	EXPECT_EQ(300*2 + 6*2, sum_sequence_values(board, Board::FIRSTPLAYER));
+}*/
+
+TEST(Minimax, Depth2_TwoPlayers) {
+	Board board;
+	board.insert_move({1,2}, Board::FIRSTPLAYER);
+	board.insert_move({1,1}, Board::SECONDPLAYER);
+	board.insert_move({2,2}, Board::FIRSTPLAYER);
+	board.insert_move({3,1}, Board::SECONDPLAYER);
+	board.insert_move({2,1}, Board::FIRSTPLAYER);
+	Minimax minimax(sum_sequence_values, simple_move_generator, 2, Board::SECONDPLAYER);
+	auto move = minimax.get_move(board);
+	board.insert_move(move, Board::FIRSTPLAYER);
+	EXPECT_EQ(6, sum_sequence_values(board, Board::FIRSTPLAYER));
+}
+
+TEST(Minimax, Depth2_SpecificMoves) {
+	Board board;
+	Minimax minimax(sum_sequence_values, simple_move_generator, 2, Board::SECONDPLAYER);
+	board.insert_move({5,5}, Board::FIRSTPLAYER);
+	board.insert_move(minimax.get_move(board), Board::SECONDPLAYER);
+	board.insert_move({5,4}, Board::FIRSTPLAYER);
+	board.insert_move(minimax.get_move(board), Board::SECONDPLAYER);
+	board.insert_move({5,3}, Board::FIRSTPLAYER);
+	EXPECT_EQ(0, sum_sequence_values(board, Board::FIRSTPLAYER));
 }
 
 TEST(Minimax, Depth3_OnePlayer) {

@@ -56,18 +56,19 @@ std::pair<std::pair<int, int>, int> Minimax::step(Board * board, unsigned int de
 			if(compare(current, choice.second)) {
 				choice.first = it;
 				choice.second = current;
-				if(compare(current,pruning_factor)) {
+				/*if(compare(current,pruning_factor)) {
 					board->remove_move(it);
 					return choice; //pruned!
-				}
+				}*/
 			}
 			board->remove_move(it);
 		}
 		return choice;
 	}
-	board->insert_move(*moves.begin(), player);
+	auto m = *moves.begin();
+	board->insert_move(m, player);
 	choice = step(board, depth - 1, other_compare, other_player, choice.second);
-	board->remove_move(*moves.begin());
+	board->remove_move(m);
 	moves.erase(moves.begin());
 	for(auto it : moves) {
 		board->insert_move(it, player);
@@ -75,10 +76,10 @@ std::pair<std::pair<int, int>, int> Minimax::step(Board * board, unsigned int de
 		if(compare(current, choice.second)) {
 			choice.first = it;
 			choice.second = current;
-			if(compare(current,pruning_factor)) {
+			/*if(compare(current,pruning_factor)) {
 				board->remove_move(it);
 				return choice; //pruned!
-			}
+			}*/
 		}
 		board->remove_move(it);
 	}

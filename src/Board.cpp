@@ -17,6 +17,20 @@ Board::Board() : _board(SIZE * SIZE, NONE),	_winner(NONE)
 	}
 }
 
+void check_sequences(const Board::Sequences_map& sequences)
+{
+	for(auto seqs : sequences) {
+		for(auto it : seqs.second) {
+			if(it.second.length > 5) {
+				throw std::runtime_error("Sequence [" + std::to_string(seqs.first.first) + "," + std::to_string(seqs.first.second) + "][" + std::to_string(it.first.first) + "," + std::to_string(it.first.second) + "] has invalid length = " + std::to_string(it.second.length));
+			}
+			if(it.second.other_is_open && (sequences.find(it.first) == sequences.end() || sequences.at(it.first).find(seqs.first) == sequences.at(it.first).end())) {
+				throw std::runtime_error("Sequence [" + std::to_string(seqs.first.first) + "," + std::to_string(seqs.first.second) + "][" + std::to_string(it.first.first) + "," + std::to_string(it.first.second) + "] has wrong other_is_open");
+			}
+		}
+	}
+}
+
 // position need to be empty
 void Board::insert_move(const std::pair<int, int>& position, const Moves& player)
 {
@@ -32,6 +46,8 @@ void Board::insert_move(const std::pair<int, int>& position, const Moves& player
 	}
 	_board.at(((position.first) * SIZE) + position.second) = player;
 	_available_positions.erase(position);
+	check_sequences(_sequences_first_player);
+	check_sequences(_sequences_second_player);
 }
 
 // position can't be empty
@@ -50,6 +66,8 @@ void Board::remove_move(const std::pair<int, int>& position)
 		throw std::runtime_error("ERRO!!! Tentativa de apagar uma posição sem jogada! Position=(" + std::to_string(position.first) + "," + std::to_string(position.second) + ")");
 	_board[((position.first) * SIZE) + position.second] = NONE;
 	_available_positions.insert(position);
+	check_sequences(_sequences_first_player);
+	check_sequences(_sequences_second_player);
 }
 
 void Board::remove_move_sequences(Board::Sequences_map& sequences, Board::Sequences_map& seq_advers, const std::pair<int, int>& position)
@@ -472,7 +490,7 @@ std::pair<int, int> Board::closest_opening(const std::pair<int, int>& position, 
 	return opening2;
 }
 
-/*Method used to discover if a position is on the edge of a sequence, that is, if it is 'beside' a opening
+/*Method used to discover if a position is on the edge of a sequence, that is, if it is 'beside' an opening
  * @param position position from which it is wanted to know if it is on the edge of a sequence
  * @param opening1 opening of a sequence
  * @param opening2 another opening of the same sequence
@@ -736,15 +754,11 @@ Direction next_direction(const Direction& direction)
  **/
 void Board::insert_move_other_player_sequences(Board::Sequences_map& sequences, const std::pair<int, int>& move)
 {
-	auto to_decrease = sequences[move]; //contains the sequences that will be decreased
-	for(auto other : to_decrease)
-	{
-		// set other_is_open, from sequences that have open = move, as false
-		auto seq = sequences[other.first];
-		for(auto f : seq)
-		{
-			if (f.first == move){
-				f.second.other_is_open = false;
+	for(Direction dir : {VERTICAL, HORIZONTAL, LEFT, RIGHT}) {
+		auto other_edges = get_other_edges_sequence_in_direction(sequences, move, dir);
+		if(other_edges[0] != std::pair<int, int>{-1,-1}) {
+			for(auto edge : other_edges) {
+				sequences[edge][move].other_is_open = false;
 			}
 		}
 	}
