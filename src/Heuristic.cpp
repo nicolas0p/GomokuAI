@@ -6,6 +6,10 @@
 
 int points_per_length[] = {1, 300, 50000, 5000000, 400000000};
 
+/**
+ * Calculates the heuristic
+ * @return the result of the heuristic
+ */
 int sum_sequence_values(const Board & board, const Board::Moves & player)
 {
 	Board::Sequences_map my_sequence;

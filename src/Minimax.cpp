@@ -29,7 +29,8 @@ std::pair<int, int> Minimax::get_move(Board board)
 	return step(&board, _difficulty, std::greater<int>(), _player, std::numeric_limits<int>::max()).first;
 }
 
-/* Step of the minimax algorithm. It selects the maximum or minimum node of its children and chooses it.
+/**
+ * Step of the minimax algorithm. It selects the maximum or minimum node of its children and chooses it.
  * @param board the board from which it is desired to generate moves of this subtree.
  * @param depth the depth that the algorithm should go.
  * @param compare function to compare different moves in order to choose the best. Be it greater or lesser.

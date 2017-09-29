@@ -15,8 +15,6 @@ class Game {
 		Game(Board* board, unique_ptr<Player> first_player, unique_ptr<Player> second_player, unique_ptr<UserInterface> user_interface);
 		virtual ~Game();
 		void start_game();
-		void help();
-		int points_calculator(Board & _board);
 
 	private:
 		Board * _board;

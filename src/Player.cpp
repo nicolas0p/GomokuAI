@@ -12,26 +12,25 @@ Player::Player(Board * board, unique_ptr<InputComponent> && input_component, Boa
 
 Player::~Player() {}
 
+/** Ask player where to insert a move
+ * @return position to insert a move
+ **/
 std::pair<int, int> Player::make_move()
 {
 	return _input_component->get_move(*_board);
 }
 
-void Player::add_points(int p)
-{
-	_point += p;
-}
-
+/** Get the points accumulated by the player
+ * @return the points
+ **/
 int Player::get_points()
 {
 	return _point;
 }
 
-Board::Moves Player::get_player()
-{
-	return _player;
-}
-
+/** Set the points accumulated by the player
+ * @param the points
+ **/
 void Player::set_points(int p)
 {
 	_point = p;

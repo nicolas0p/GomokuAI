@@ -10,7 +10,10 @@ HumanInput::HumanInput(const Board::Moves& player) :
 
 HumanInput::~HumanInput() {}
 
-
+/**
+ * Ask user where to insert a move
+ * @return position to insert a move
+ **/
 std::pair<int, int> HumanInput::get_move(const Board board)
 {
 	
