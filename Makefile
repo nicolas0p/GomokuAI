@@ -1,5 +1,5 @@
-CC=g++
-CFLAGS=-Wall -std=c++14
+CC=g++-9
+CFLAGS=-Wall -std=c++17 -pedantic
 DEBUGFLAGS=-g -Og
 TEST_FLAGS=--gtest_break_on_failure
 
